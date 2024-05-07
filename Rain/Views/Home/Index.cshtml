@@ -1,8 +1,25 @@
-﻿@{
+﻿@using Rain.Models;
+@using Rain.Services;
+@inject Rain.Services.RainService RainService
+@{
     ViewData["Title"] = "Home Page";
+
+    var entries = await RainService.GetAllEntries(); // Call the GetAllEntries() method
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    
+
+    <table>
+        @foreach (var entry in entries)
+        {
+            <tr>
+                <td>@entry.Id</td>
+                <td>@entry.date</td>
+                <td>@entry.rainfall</td>
+            </tr>
+        }
+    </table>
 </div>
