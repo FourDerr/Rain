@@ -1,0 +1,193 @@
+﻿@using Rain.Models;
+@using Rain.Services;
+@inject Rain.Services.RainService RainService
+@{
+    ViewData["Title"] = "Home Page";
+
+    var entries = await RainService.GetAllEntries(); // Call the GetAllEntries() method
+}
+
+
+@model DateTime
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<h1 class="display-4 text-center">Rain Data</h1>
+<h1 class="py-3 text-center">Rain Data</h1>
+<div class="input-container">
+    <input type="text" id="datepicker" name="datepicker" readonly class="center" />
+</div>
+
+<br />
+<br />
+@*<div class="col-md-6 col-xl-4">
+    <div class="card bg-danger text-white mb-3">
+        
+    </div>
+</div>*@
+
+
+<div id="cardContainer" class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+    <!-- Cards will be appended here -->
+    
+</div>
+
+<div id="rainfallContainer" >
+
+</div>
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#datepicker").datepicker({
+            dateFormat: "yy-mm-dd",
+            onSelect: function (dateText) {
+                // Clear old data
+                $("#cardContainer").empty();
+                $("#rainfallContainer").empty();
+                fetchData(dateText);
+            }
+        });
+    });
+
+    function fetchData(selectedDate) {
+        // AJAX request to fetch rainfall data for the selected date
+        $.ajax({
+            url: "/api/Rain/filter",
+            type: "GET",
+            data: { date: selectedDate }, 
+            success: function (data) {
+                // Update date container with selected date
+                $("#dateContainer").text("Selected Date: " + selectedDate);
+
+                if (data.length > 0) {
+                     //Loop through the data and create card elements
+                            data.forEach(function (item) {
+                                var cardHtml = `
+                                           <div class="col">
+                                           <div class="card h-100">
+                                           <img class="card-img-top" src="/img/elements/2.jpg" alt="card image cap" />
+                                           <div class="card-body">
+                                                    <h5 class="card-title">${item.date}</h5>
+                                                    <p class="card-text">Rainfall: ${item.rainfall}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+
+                                // Append the card HTML to the card container
+                                $('#cardContainer').append(cardHtml);
+                                //alert("yes");
+                            });
+                } else {
+                    var text = `
+                <div class="card-header">Error</div>
+            <div class="card-body">
+                <h5 class="card-title text-white">Rainfall Data Not Found</h5>
+                <p class="card-text">
+                    Please Selecte new date!
+                </p>
+            </div>`;
+                    // Show message if no data found
+                    $("#cardContainer").append(text);
+                }
+
+            },
+            //success: function (data) {
+            //    if (data.length > 0) {
+            //        // Loop through the data and create card elements
+            //        data.forEach(function (item) {
+            //            var cardHtml = `
+            //                    <div class="col">
+            //                        <div class="card h-100">
+            //                            <div class="card-body">
+            //                                <h5 class="card-title">${item.Date}</h5>
+            //                                <p class="card-text">Rainfall: ${item.Rainfall}</p>
+            //                            </div>
+            //                        </div>
+            //                    </div>
+            //                `;
+
+            //            // Append the card HTML to the card container
+            //            $('#cardContainer').append(cardHtml);
+            //        });
+            //    } else {
+            //        // Show a message if no data is returned
+            //        $('#cardContainer').html('<p>No data available.</p>');
+            //    }
+            //},
+            error: function (error) {
+                //console.log("Error fetching data:", error);
+
+                // Show message if no data found
+                $("#rainfallContainer").text("No Rainfall Data Found");
+            }
+        });
+    }
+
+</script>
+
+
+
+
+
+<!-- Grid Card--> 
+@*<div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+    <div class="col">
+        <div class="card h-100">
+            <img class="card-img-top" src="~/img/elements/2.jpg" alt="card image cap" />
+            <div class="card-body">
+                <h5 class="card-title">card title1</h5>
+                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content. this content is a little bit longer.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100">
+            <img class="card-img-top" src="~/img/elements/13.jpg" alt="card image cap" />
+            <div class="card-body">
+                <h5 class="card-title">card title2</h5>
+                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content. this content is a little bit longer.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100">
+            <img class="card-img-top" src="~/img/elements/4.jpg" alt="card image cap" />
+            <div class="card-body">
+                <h5 class="card-title">card title3</h5>
+                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100">
+            <img class="card-img-top" src="~/img/elements/18.jpg" alt="card image cap" />
+            <div class="card-body">
+                <h5 class="card-title">card title4</h5>
+                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content. this content is a little bit longer.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100">
+            <img class="card-img-top" src="~/img/elements/19.jpg" alt="card image cap" />
+            <div class="card-body">
+                <h5 class="card-title">card title5</h5>
+                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content. this content is a little bit longer.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100">
+            <img class="card-img-top" src="~/img/elements/20.jpg" alt="card image cap" />
+            <div class="card-body">
+                <h5 class="card-title">card title6</h5>
+                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content. this content is a little bit longer.</p>
+            </div>
+        </div>
+    </div>
+
+</div>*@

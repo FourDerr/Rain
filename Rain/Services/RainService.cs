@@ -24,11 +24,11 @@ namespace Rain.Services
         public async Task<List<RainModel>> GetEntryByDate(string date) =>
             await _rainfall_dataCollection.Find(x => x.date == date).ToListAsync();
 
-        public async Task CreateEntry(RainModel newJob) =>
-          await _rainfall_dataCollection.InsertOneAsync(newJob);
+        public async Task CreateEntry(RainModel newRain) =>
+          await _rainfall_dataCollection.InsertOneAsync(newRain);
 
-        public async Task UpdateEntry(string id, RainModel updatedJob) =>
-          await _rainfall_dataCollection.ReplaceOneAsync(x => x.Id == id, updatedJob);
+        public async Task UpdateEntry(string id, RainModel updatedRain) =>
+          await _rainfall_dataCollection.ReplaceOneAsync(x => x.Id == id, updatedRain);
 
         public async Task RemoveEntry(string id) =>
           await _rainfall_dataCollection.DeleteOneAsync(x => x.Id == id);

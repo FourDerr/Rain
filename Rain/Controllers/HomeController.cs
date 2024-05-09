@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Rain.Models;
 using RainFinal.Models;
 using System.Diagnostics;
 
@@ -20,6 +21,17 @@ public class HomeController : Controller
     {
         return View();
     }
+    public IActionResult RainView(DateTime? datepicker)
+    {
+        if (datepicker.HasValue)
+        {
+            // Process the selected date
+            // Example: ViewBag.SelectedDate = datepicker.Value;
+        }
+
+        return View();
+    }
+
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

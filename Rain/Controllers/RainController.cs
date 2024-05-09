@@ -13,8 +13,9 @@ namespace Rain.Controllers
 
         public RainController(RainService rainService)
         {
-            _rainService = rainService;       
+            _rainService = rainService;
         }
+
 
         // api/rains
         [HttpGet]
@@ -49,6 +50,7 @@ namespace Rain.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(RainModel newrain)
         {
+            newrain.Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
             await _rainService.CreateEntry(newrain);
             return CreatedAtAction(nameof(GetById), new { id = newrain.Id }, newrain);
         }

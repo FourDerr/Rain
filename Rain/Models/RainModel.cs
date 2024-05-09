@@ -1,15 +1,17 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Serialization;
 
 namespace Rain.Models
 {
     public class RainModel
     {
-        [BsonId]
+        //[BsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
-        public required string? Id { get; set; }
+        [JsonIgnore]
+        public  string? Id { get; set; }
 
-        public required string date { get; set; } 
+        public  string date { get; set; } 
 
-        public required double rainfall { get; set; }
+        public  double rainfall { get; set; }
     }
 }
