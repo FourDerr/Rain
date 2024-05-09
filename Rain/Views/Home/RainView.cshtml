@@ -1,10 +1,11 @@
-﻿@using Rain.Models;
-@using Rain.Services;
-@inject Rain.Services.RainService RainService
+﻿@using Device.Models;
+@using Device.Services;
+
+@inject Device.Services.DeviceService DeviceService
 @{
     ViewData["Title"] = "Home Page";
 
-    var entries = await RainService.GetAllEntries(); // Call the GetAllEntries() method
+    var entries = await DeviceService.GetAllEntries(); // Call the GetAllEntries() method
 }
 
 
@@ -41,7 +42,7 @@
 
     $(document).ready(function () {
         $("#datepicker").datepicker({
-            dateFormat: "yy-mm-dd",
+            dateFormat: "dd/mm/yy",
             onSelect: function (dateText) {
                 // Clear old data
                 $("#cardContainer").empty();
@@ -54,7 +55,7 @@
     function fetchData(selectedDate) {
         // AJAX request to fetch rainfall data for the selected date
         $.ajax({
-            url: "/api/Rain/filter",
+            url: "/api/Device/filter",
             type: "GET",
             data: { date: selectedDate }, 
             success: function (data) {
@@ -67,10 +68,10 @@
                                 var cardHtml = `
                                            <div class="col">
                                            <div class="card h-100">
-                                           <img class="card-img-top" src="/img/elements/2.jpg" alt="card image cap" />
+                                                <img class="card-img-top" src="data:image/jpeg;base64, ${item.value}" alt="card image cap" />
                                            <div class="card-body">
-                                                    <h5 class="card-title">${item.date}</h5>
-                                                    <p class="card-text">Rainfall: ${item.rainfall}</p>
+                                                    <h5 class="card-title">Date: ${item.date}</h5>
+                                                            <p class="card-text">Temperature(C): ${item.temperature_C} Humidity: ${item.humidity} Pressure: ${item.pressure_hPa} Wind: ${item.wind} 
                                                 </div>
                                             </div>
                                         </div>

@@ -1,5 +1,6 @@
+using Device.Services;
 using Rain.Models;
-using Rain.Services;
+//using Rain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<DatabaseSetting>(builder.Configuration.GetSection("RainDatabase"));
-builder.Services.AddSingleton<RainService>();
+builder.Services.AddSingleton<DeviceService>();
 
 
 
