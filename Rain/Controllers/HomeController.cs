@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Device.Services;
+using Microsoft.AspNetCore.Mvc;
 using Rain.Models;
 using RainFinal.Models;
 using System.Diagnostics;
@@ -32,6 +33,7 @@ public class HomeController : Controller
         return View();
     }
 
+    
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

@@ -1,10 +1,10 @@
-﻿@using Rain.Models;
+﻿@*@using Rain.Models;
 @using Rain.Services;
-@inject Rain.Services.RainService RainService
+@inject Rain.Services.RainService RainService*@
 @{
     ViewData["Title"] = "Home Page";
 
-    var entries = await RainService.GetAllEntries(); // Call the GetAllEntries() method
+    //var entries = await RainService.GetAllEntries(); // Call the GetAllEntries() method
 }
 
 <div class="text-center">
