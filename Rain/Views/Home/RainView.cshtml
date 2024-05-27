@@ -19,6 +19,12 @@
 
 <br />
 <br />
+<canvas id="temperatureChart"></canvas>
+<canvas id="humidityChart"></canvas>
+<canvas id="pressureChart"></canvas>
+<canvas id="windChart"></canvas>
+
+<div id="cardContainer" class="row row-cols-1 row-cols-md-3 g-4 mb-5"></div>
 @*<div class="col-md-6 col-xl-4">
     <div class="card bg-danger text-white mb-3">
         
@@ -26,168 +32,135 @@
 </div>*@
 
 
-<div id="cardContainer" class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+@*<div id="cardContainer" class="row row-cols-1 row-cols-md-3 g-4 mb-5">
     <!-- Cards will be appended here -->
     
-</div>
+</div>*@
 
-<div id="rainfallContainer" >
-
-</div>
-
-
-
-
-<script>
-
-    $(document).ready(function () {
-        $("#datepicker").datepicker({
-            dateFormat: "dd/mm/yy",
-            onSelect: function (dateText) {
-                // Clear old data
-                $("#cardContainer").empty();
-                $("#rainfallContainer").empty();
-                fetchData(dateText);
-            }
-        });
-    });
-
-    function fetchData(selectedDate) {
-        // AJAX request to fetch rainfall data for the selected date
-        $.ajax({
-            url: "/api/Device/filter",
-            type: "GET",
-            data: { date: selectedDate }, 
-            success: function (data) {
-                // Update date container with selected date
-                $("#dateContainer").text("Selected Date: " + selectedDate);
-
-                if (data.length > 0) {
-                     //Loop through the data and create card elements
-                            data.forEach(function (item) {
-                                var cardHtml = `
-                                           <div class="col">
-                                           <div class="card h-100">
-                                                <img class="card-img-top" src="data:image/jpeg;base64, ${item.value}" alt="card image cap" />
-                                           <div class="card-body">
-                                                    <h5 class="card-title">Date: ${item.date}</h5>
-                                                            <p class="card-text">Temperature(C): ${item.temperature_C} Humidity: ${item.humidity} Pressure: ${item.pressure_hPa} Wind: ${item.wind} 
-                                                </div>
-                                            </div>
-                                        </div>
-                                    `;
-
-                                // Append the card HTML to the card container
-                                $('#cardContainer').append(cardHtml);
-                                //alert("yes");
-                            });
-                } else {
-                    var text = `
-                <div class="card-header">Error</div>
-            <div class="card-body">
-                <h5 class="card-title text-white">Rainfall Data Not Found</h5>
-                <p class="card-text">
-                    Please Selecte new date!
-                </p>
-            </div>`;
-                    // Show message if no data found
-                    $("#cardContainer").append(text);
-                }
-
-            },
-            //success: function (data) {
-            //    if (data.length > 0) {
-            //        // Loop through the data and create card elements
-            //        data.forEach(function (item) {
-            //            var cardHtml = `
-            //                    <div class="col">
-            //                        <div class="card h-100">
-            //                            <div class="card-body">
-            //                                <h5 class="card-title">${item.Date}</h5>
-            //                                <p class="card-text">Rainfall: ${item.Rainfall}</p>
-            //                            </div>
-            //                        </div>
-            //                    </div>
-            //                `;
-
-            //            // Append the card HTML to the card container
-            //            $('#cardContainer').append(cardHtml);
-            //        });
-            //    } else {
-            //        // Show a message if no data is returned
-            //        $('#cardContainer').html('<p>No data available.</p>');
-            //    }
-            //},
-            error: function (error) {
-                //console.log("Error fetching data:", error);
-
-                // Show message if no data found
-                $("#rainfallContainer").text("No Rainfall Data Found");
-            }
-        });
-    }
-
-</script>
-
-
-
-
-
-<!-- Grid Card--> 
-@*<div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
-    <div class="col">
-        <div class="card h-100">
-            <img class="card-img-top" src="~/img/elements/2.jpg" alt="card image cap" />
-            <div class="card-body">
-                <h5 class="card-title">card title1</h5>
-                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content. this content is a little bit longer.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card h-100">
-            <img class="card-img-top" src="~/img/elements/13.jpg" alt="card image cap" />
-            <div class="card-body">
-                <h5 class="card-title">card title2</h5>
-                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content. this content is a little bit longer.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card h-100">
-            <img class="card-img-top" src="~/img/elements/4.jpg" alt="card image cap" />
-            <div class="card-body">
-                <h5 class="card-title">card title3</h5>
-                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card h-100">
-            <img class="card-img-top" src="~/img/elements/18.jpg" alt="card image cap" />
-            <div class="card-body">
-                <h5 class="card-title">card title4</h5>
-                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content. this content is a little bit longer.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card h-100">
-            <img class="card-img-top" src="~/img/elements/19.jpg" alt="card image cap" />
-            <div class="card-body">
-                <h5 class="card-title">card title5</h5>
-                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content. this content is a little bit longer.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card h-100">
-            <img class="card-img-top" src="~/img/elements/20.jpg" alt="card image cap" />
-            <div class="card-body">
-                <h5 class="card-title">card title6</h5>
-                <p class="card-text">this is a longer card with supporting text below as a natural lead-in to additional content. this content is a little bit longer.</p>
-            </div>
-        </div>
-    </div>
+@*<div id="rainfallContainer" >
 
 </div>*@
+
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(function () {
+            $("#datepicker").datepicker({
+                dateFormat: "dd/mm/yy",
+                onSelect: function (dateText) {
+                    $.getJSON('/api/Device/filter?', { date: dateText }, function (data) {
+                        updateCharts(data);
+                    });
+                }
+            });
+        });
+
+        function updateCharts(data) {// Clear all existing chart data
+            document.getElementById('temperatureChart').innerHTML = "";
+            document.getElementById('humidityChart').innerHTML = "";
+            document.getElementById('pressureChart').innerHTML = "";
+            document.getElementById('windChart').innerHTML = "";
+
+            // Check if there's data before creating charts
+            if (data.length === 0) {
+                // Display "No Data" message in all chart containers
+                document.getElementById('temperatureChart').innerHTML = "No Data please select new date";
+                document.getElementById('humidityChart').innerHTML = "No Data please select new date";
+                document.getElementById('pressureChart').innerHTML = "No Data please select new date";
+                document.getElementById('windChart').innerHTML = "No Data please select new date";
+            } else {
+            var temperatureData = data.map(d => d.temperature_C);
+            var humidityData = data.map(d => d.humidity);
+            var pressureData = data.map(d => d.pressure_hPa);
+            var windData = data.map(d => d.wind);
+
+            var labels = data.map(d => d.time);
+
+                // Update Temperature Chart
+                new Chart(document.getElementById('temperatureChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Temperature (°C)',
+                            data: temperatureData,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+
+                // Update Humidity Chart
+                new Chart(document.getElementById('humidityChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Humidity (%)',
+                            data: humidityData,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+
+                // Update Pressure Chart
+                new Chart(document.getElementById('pressureChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Pressure (hPa)',
+                            data: pressureData,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+
+                // Update Wind Chart
+                new Chart(document.getElementById('windChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Wind (m/s)',
+                            data: windData,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+             }
+            
+        }
+      
+    </script>
+}
