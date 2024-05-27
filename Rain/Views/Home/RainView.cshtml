@@ -6,6 +6,7 @@
     ViewData["Title"] = "Home Page";
 
     var entries = await DeviceService.GetAllEntries(); // Call the GetAllEntries() method
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 }
 
 
@@ -28,7 +29,7 @@
 
 
 
-
+    
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@latest"></script>
@@ -57,16 +58,16 @@
                 }
             });
         });
-
+        });
         var temperatureChartInstance;
         var humidityChartInstance;
         var pressureChartInstance;
         var windChartInstance;
-
+                // Update date container with selected date
         function updateCharts(data) {
             console.log("Data received:", data);
             console.log("Data length:", data.length);
-
+                                        </div>
             // Clear old data
             clearChartData();
 
@@ -192,7 +193,7 @@
                 }
             });
         }
-
+        });
         function createWindChart(windData, labels) {
             // Create Wind Chart
             windChartInstance = new Chart(document.getElementById('windChart').getContext('2d'), {
@@ -216,6 +217,8 @@
         }
     </script>
 }
+
+
 
 
 

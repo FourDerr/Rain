@@ -1,6 +1,114 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "About Us";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* CSS สำหรับส่วน Container */
+        .container {
+            text-align: center; /* จัดข้อความให้อยู่กลางตามแนวนอน */
+            margin-bottom: 20px; /* ระยะห่างด้านล่าง */
+        }
+
+            .container .content {
+                display: inline-block; /* ทำให้ div เป็น inline-block */
+                vertical-align: middle; /* จัดให้อยู่ตรงกลางแนวดิ่ง */
+                max-width: 600px; /* กำหนดความกว้างสูงสุด */
+                margin: 0 20px; /* ระยะห่างด้านข้าง */
+            }
+
+          
+
+        /* CSS สำหรับข้อความ */
+        .text {
+            max-width: 600px; /* กำหนดความกว้างสูงสุดของข้อความ */
+            margin: 0 20px; /* ระยะห่างด้านข้างของข้อความ */
+        }
+
+        /* CSS สำหรับรูปภาพ */
+        .container img {
+            display: inline-block; /* ทำให้ img เป็น inline-block */
+            vertical-align: middle; /* จัดให้อยู่ตรงกลางแนวดิ่ง */
+            max-width: 100%; /* กำหนดให้ขนาดสูงสุดของรูปเท่ากับขนาดของ container */
+            height: auto; /* ปรับขนาดความสูงอัตโนมัติ */
+            border-radius: 10px; /* เพิ่มขอบมน */
+        }
+
+        /* CSS สำหรับ Hero Section */
+        .hero-section {
+            display: flex; /* ใช้ flexbox layout */
+            align-items: center; /* จัดให้ระดับตรงกลางตามแนวดิ่ง */
+            margin-bottom: 20px; /* ระยะห่างด้านล่าง */
+            flex-direction: row-reverse; /* กลับทิศทางการเรียงลำดับขององค์ประกอบ */
+        }
+
+            .hero-section img {
+                display: inline-block; /* ทำให้ img เป็น inline-block */
+                vertical-align: middle; /* จัดให้อยู่ตรงกลางแนวดิ่ง */
+                max-width: 300px; /* กำหนดขนาดสูงสุดของรูปเท่ากับ 300px */
+                height: auto; /* ปรับขนาดความสูงอัตโนมัติ */
+                border-radius: 10px; /* เพิ่มขอบมน */
+                margin-left: 20px; /* เพิ่มระยะห่างด้านซ้ายของรูป */
+            }
+
+            /* CSS สำหรับข้อความใน Hero Section */
+            .hero-section div {
+                text-align: left; /* จัดให้ข้อความชิดขวา */
+            }
+
+        /* CSS สำหรับ Hero Section */
+        .hero-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #05445e 0%, #0d324d 100%);
+        }
+
+            /* CSS สำหรับข้อความใน Hero Section */
+            .hero-section div {
+                text-align: left;
+                color: white;
+                margin-right: 120px;
+            }
+
+
+
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <img src="https://via.placeholder.com/701x468" alt="701x468">
+        <div class="content">
+            <h1>About Us</h1>
+            <p>HubSpot's company and culture are a lot like our product.</p>
+            <p>They're crafted, not cobbled, for a delightful experience.</p>
+        </div>
+    </div>
+
+    <!-- Container -->
+    <div class="container">
+        <img src="https://via.placeholder.com/600x400" alt="600x400">
+        <div class="content">
+            <h1>Our Mission: Helping Millions of Organizations Grow Better</h1>
+            <p>We believe not just in growing bigger, but in growing better. And growing better means aligning the success of your own business with the success of your customers. Win-win!</p>
+        </div>
+    </div>
+
+    <!-- Container with Reverse -->
+    <div class="container">
+        <img src="https://via.placeholder.com/600x400" alt="600x400" style="order: 2; margin-left: 20px;">
+        <div class="content">
+            <h1>Our Story</h1>
+            <p>In 2004, fellow MIT graduate students Brian Halligan and Dharmesh Shah noticed a major shift in the way people shop and purchase products. Buyers didn’t want to be interrupted by ads; they wanted helpful information. In 2006, they founded HubSpot to help companies use that shift to grow better with inbound marketing.</p>
+            <p>Along the way, HubSpot expanded beyond marketing into a crafted, not cobbled suite of products that create the frictionless customer experience that buyers expect today. Expertly led by CEO Yamini Rangan, HubSpot uses its customer platform built on an AI-powered Smart CRM to help millions of scaling organizations grow better.</p>
+        </div>
+    </div>
+
+    </body>
+</html>
