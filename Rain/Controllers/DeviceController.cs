@@ -1,7 +1,10 @@
 ﻿using Device.Models;
 using Device.Services;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using System.Threading.Tasks;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 //using Rain.Models;
 //using Rain.Services;
 
@@ -19,22 +22,13 @@ namespace Device.Controllers
             _deviceService = deviceService;
         }
 
-        //public async Task<IActionResult> DisplayDeviceImage(string deviceId)
-        //{
-        //    DeviceModel device = await _deviceService.GetDeviceById(deviceId);
-        //    if (device != null && device.value != null && device.value.Length > 0)
-        //    {
-        //        // Convert binary data to base64 string
-        //        string base64Image = System.Convert.ToBase64String(device.value);
 
-        //        // Create a ViewData dictionary to pass data to the view
-        //        ViewData["Base64Image"] = base64Image;
-
-        //        // Return the view with the ViewData
-        //        return View("Views/Home/RainView.cshtml", device);
-        //    }
-        //    return NotFound();
-        //}
+        [HttpGet]
+        public async Task<IActionResult> GetRainData(string date)
+        {
+            List<DeviceModel> data = await _deviceService.GetEntryByDate(date);
+            return new JsonResult(data);
+        }
 
         // api/Device
         [HttpGet]

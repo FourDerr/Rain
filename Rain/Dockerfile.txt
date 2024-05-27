@@ -1,0 +1,25 @@
+# Use the official .NET SDK image from Docker Hub
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Clone your GitHub repository
+RUN git clone https://github.com/FourDerr/Rain .
+
+# Restore dependencies
+RUN dotnet restore
+
+# Build the application
+RUN dotnet publish -c Release -o out
+
+# Build the runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/out ./
+
+# Expose the port your application listens on
+EXPOSE 80
+
+# Run the application
+ENTRYPOINT ["dotnet", "Rain.dll"]
