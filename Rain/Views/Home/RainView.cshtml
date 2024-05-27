@@ -6,6 +6,7 @@
     ViewData["Title"] = "Home Page";
 
     var entries = await DeviceService.GetAllEntries(); // Call the GetAllEntries() method
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 }
 
 
@@ -19,27 +20,16 @@
 
 <br />
 <br />
-@*<div class="col-md-6 col-xl-4">
-    <div class="card bg-danger text-white mb-3">
-        
-    </div>
-</div>*@
-
 
 <div id="cardContainer" class="row row-cols-1 row-cols-md-3 g-4 mb-5">
     <!-- Cards will be appended here -->
-    
 </div>
 
-<div id="rainfallContainer" >
-
+<div id="rainfallContainer">
+    <!-- The canvas element will be appended here -->
 </div>
-
-
-
 
 <script>
-
     $(document).ready(function () {
         $("#datepicker").datepicker({
             dateFormat: "dd/mm/yy",
@@ -57,77 +47,116 @@
         $.ajax({
             url: "/api/Device/filter",
             type: "GET",
-            data: { date: selectedDate }, 
+            data: { date: selectedDate },
             success: function (data) {
                 // Update date container with selected date
                 $("#dateContainer").text("Selected Date: " + selectedDate);
 
                 if (data.length > 0) {
-                     //Loop through the data and create card elements
-                            data.forEach(function (item) {
-                                var cardHtml = `
-                                           <div class="col">
-                                           <div class="card h-100">
-                                                <img class="card-img-top" src="data:image/jpeg;base64, ${item.value}" alt="card image cap" />
-                                           <div class="card-body">
-                                                    <h5 class="card-title">Date: ${item.date}</h5>
-                                                            <p class="card-text">Temperature(C): ${item.temperature_C} Humidity: ${item.humidity} Pressure: ${item.pressure_hPa} Wind: ${item.wind} 
-                                                </div>
-                                            </div>
+                    // Loop through the data and create card elements
+                    data.forEach(function (item) {
+                        var cardHtml = `
+                                <div class="col">
+                                    <div class="card h-100">
+                                        <img class="card-img-top" src="data:image/jpeg;base64, ${item.value}" alt="card image cap" />
+                                        <div class="card-body">
+                                            <h5 class="card-title">Date: ${item.date}</h5>
+                                            <p class="card-text">Temperature(C): ${item.temperature_C} Humidity: ${item.humidity} Pressure: ${item.pressure_hPa} Wind: ${item.wind} Time: ${item.time}</p>
                                         </div>
-                                    `;
+                                    </div>
+                                </div>
+                            `;
+                        $('#cardContainer').append(cardHtml);
+                    });
 
-                                // Append the card HTML to the card container
-                                $('#cardContainer').append(cardHtml);
-                                //alert("yes");
-                            });
+                    // Add the canvas element for the chart
+                    var chartHtml = '<canvas id="rainfallChart"></canvas>';
+                    $('#rainfallContainer').append(chartHtml);
+
+                    // Prepare data for the chart
+                    var labels = data.map(item => item.time); // ใช้เวลาเป็น labels
+                    var temperatures = data.map(item => item.temperature_C);
+                    var humidities = data.map(item => item.humidity);
+                    var pressures = data.map(item => item.pressure_hPa);
+                    var winds = data.map(item => item.wind);
+
+                    var ctx = document.getElementById('rainfallChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Temperature (C)',
+                                    data: temperatures,
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    fill: false
+                                },
+                                {
+                                    label: 'Humidity (%)',
+                                    data: humidities,
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    fill: false
+                                },
+                                {
+                                    label: 'Pressure (hPa)',
+                                    data: pressures,
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    fill: false
+                                },
+                                {
+                                    label: 'Wind (m/s)',
+                                    data: winds,
+                                    borderColor: 'rgba(153, 102, 255, 1)',
+                                    fill: false
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    labels: {
+                                        color: 'rgb(255, 99, 132)'
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        color: 'rgba(75, 192, 192, 1)'
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: 'rgba(75, 192, 192, 1)'
+                                    }
+                                }
+                            }
+                        }
+                    });
                 } else {
                     var text = `
-                <div class="card-header">Error</div>
-            <div class="card-body">
-                <h5 class="card-title text-white">Rainfall Data Not Found</h5>
-                <p class="card-text">
-                    Please Selecte new date!
-                </p>
-            </div>`;
-                    // Show message if no data found
+                            <div class="card-header">Error</div>
+                            <div class="card-body">
+                                <h5 class="card-title text-white">Rainfall Data Not Found</h5>
+                                <p class="card-text">Please Select a new date!</p>
+                            </div>`;
                     $("#cardContainer").append(text);
                 }
-
             },
-            //success: function (data) {
-            //    if (data.length > 0) {
-            //        // Loop through the data and create card elements
-            //        data.forEach(function (item) {
-            //            var cardHtml = `
-            //                    <div class="col">
-            //                        <div class="card h-100">
-            //                            <div class="card-body">
-            //                                <h5 class="card-title">${item.Date}</h5>
-            //                                <p class="card-text">Rainfall: ${item.Rainfall}</p>
-            //                            </div>
-            //                        </div>
-            //                    </div>
-            //                `;
-
-            //            // Append the card HTML to the card container
-            //            $('#cardContainer').append(cardHtml);
-            //        });
-            //    } else {
-            //        // Show a message if no data is returned
-            //        $('#cardContainer').html('<p>No data available.</p>');
-            //    }
-            //},
             error: function (error) {
-                //console.log("Error fetching data:", error);
-
                 // Show message if no data found
                 $("#rainfallContainer").text("No Rainfall Data Found");
             }
         });
     }
-
 </script>
+
+
+
 
 
 
