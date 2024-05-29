@@ -9,217 +9,310 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 }
 
-
 @model DateTime
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<h1 class="display-4 text-center">Rain Data</h1>
-<div class="input-container">
-    <input type="text" id="datepicker" name="datepicker" readonly class="center" />
-</div>
-
-<br />
-<br />
-<canvas id="temperatureChart"></canvas>
-<canvas id="humidityChart"></canvas>
-<canvas id="pressureChart"></canvas>
-<canvas id="windChart"></canvas>
-
-<div id="noDataMessage"></div>
-
-
-
-    
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@latest"></script>
-    <script>
-        $(function () {
-            $("#datepicker").datepicker({
-                dateFormat: "dd/mm/yy",
-                onSelect: function (dateText) {
-                    // Clear old data
-                    $("#noDataMessage").empty();
-                    $.getJSON('/api/Device/filter', { date: dateText })
-                        .done(function (data) {
-                            if (data.length === 0) {
-                                displayNoDataMessage(); // Call displayNoDataMessage if API returns no data
-                            } else {
-                                updateCharts(data); // Call updateCharts with the API data
-                            }
-                        })
-                        .fail(function (jqXHR, textStatus, errorThrown) {
-                            if (jqXHR.status === 404) {
-                                displayNoDataMessage()
-                            } else {
-                               displayErrorMessage('API call failed: 404 (Not Found)'); // Display custom error message for 404
-                            }
-                        });
-                }
-            });
-        });
-        });
-        var temperatureChartInstance;
-        var humidityChartInstance;
-        var pressureChartInstance;
-        var windChartInstance;
-                // Update date container with selected date
-        function updateCharts(data) {
-            console.log("Data received:", data);
-            console.log("Data length:", data.length);
-                                        </div>
-            // Clear old data
-            clearChartData();
-
-            var temperatureData = data.map(d => d.temperature_C);
-            var humidityData = data.map(d => d.humidity);
-            var pressureData = data.map(d => d.pressure_hPa);
-            var windData = data.map(d => d.wind);
-            var labels = data.map(d => d.time);
-
-            // Create charts with new data
-            createTemperatureChart(temperatureData, labels);
-            createHumidityChart(humidityData, labels);
-            createPressureChart(pressureData, labels);
-            createWindChart(windData, labels);
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/site.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
-        function clearChartData() {
-            // Clear old data
-            if (temperatureChartInstance) {
-                temperatureChartInstance.destroy();
-            }
-            if (humidityChartInstance) {
-                humidityChartInstance.destroy();
-            }
-            if (pressureChartInstance) {
-                pressureChartInstance.destroy();
-            }
-            if (windChartInstance) {
-                windChartInstance.destroy();
-            }
-
-            
+        .container {
+            text-align: center;
+            padding-top: 100px;
         }
 
-        function displayNoDataMessage() {
-            // Display "No Data" message in a specific element on the view
-            $("#noDataMessage").text("No data on this day. Please select a new date.");
-            // Clear old data
-            if (temperatureChartInstance) {
-                temperatureChartInstance.destroy();
-            }
-            if (humidityChartInstance) {
-                humidityChartInstance.destroy();
-            }
-            if (pressureChartInstance) {
-                pressureChartInstance.destroy();
-            }
-            if (windChartInstance) {
-                windChartInstance.destroy();
-            }
+        .icon-container {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        function displayErrorMessage(message) {
-            // Display custom error message
-            alert(message);
-            // You can also update the UI to show the error message in a specific element if needed
+        .cloud-icon {
+            width: 100px;
+            height: 100px;
         }
 
+        .input-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-        function createTemperatureChart(temperatureData, labels) {
-            temperatureChartInstance = new Chart(document.getElementById('temperatureChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Temperature (°C)',
-                        data: temperatureData,
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: { beginAtZero: true },
-                        y: { beginAtZero: true }
+            .input-container .instruction {
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+                color: #333;
+            }
+
+        .date-picker .btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+            .date-picker .btn:hover {
+                background-color: #555;
+                transform: translateY(-2px);
+            }
+
+        .canvas-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+            .canvas-container canvas {
+                margin: 10px;
+                width: 45%;
+                border-radius: 10px;
+            }
+
+        #noDataMessage {
+            font-size: 1.2rem;
+            color: #ff0000;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="icon-container">
+            <img src="https://img.icons8.com/ios-filled/100/000000/cloud.png" alt="Cloud Icon" class="cloud-icon">
+        </div>
+        <div class="input-container">
+            <p class="instruction">กดเลือกวันที่ที่คุณต้องการดูข้อมูลน้ำฝน:</p>
+            <input type="text" id="datepicker" name="datepicker" readonly class="center" />
+        </div>
+        <div class="date-picker">
+            <button class="btn" data-bs-toggle="modal" >ดูข้อมูลน้ำฝน</button>
+        </div>
+        <br />
+        <br />
+        <div class="canvas-container">
+            <canvas id="temperatureChart"></canvas>
+            <canvas id="humidityChart"></canvas>
+            <canvas id="pressureChart"></canvas>
+            <canvas id="windChart"></canvas>
+        </div>
+        <div id="noDataMessage"></div>
+    </div>
+
+    <!-- Modal 1-->
+    <div class="modal fade" id="modalToggle" aria-labelledby="modalToggleLabel" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalToggleLabel">Modal 1</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Show a second modal and hide this one with the button below.
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-target="#modalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">Open second modal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2-->
+    <div class="modal fade" id="modalToggle2" aria-hidden="true" aria-labelledby="modalToggleLabel2" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalToggleLabel2">Modal 2</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Hide this modal and show the first with the button below.
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-target="#modalToggle" data-bs-toggle="modal" data-bs-dismiss="modal">Back to first</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@latest"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script>
+            $(function () {
+                $("#datepicker").datepicker({
+                    dateFormat: "dd/mm/yy",
+                    onSelect: function (dateText) {
+                        // Clear old data
+                        $("#noDataMessage").empty();
+                        $.getJSON('/api/Device/filter', { date: dateText })
+                            .done(function (data) {
+                                if (data.length === 0) {
+                                    displayNoDataMessage(); // Call displayNoDataMessage if API returns no data
+                                } else {
+                                    updateCharts(data); // Call updateCharts with the API data
+                                }
+                            })
+                            .fail(function (jqXHR, textStatus, errorThrown) {
+                                if (jqXHR.status === 404) {
+                                    displayNoDataMessage()
+                                } else {
+                                    displayErrorMessage('API call failed: 404 (Not Found)'); // Display custom error message for 404
+                                }
+                            });
                     }
-                }
-            });
-        }
+                });
 
-        // Similar functions for other charts (humidity, pressure, wind)
-        function createHumidityChart(humidityData, labels) {
-            // Create humidity chart
-            humidityChartInstance = new Chart(document.getElementById('humidityChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Humidity (%)',
-                        data: humidityData,
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: { beginAtZero: true },
-                        y: { beginAtZero: true }
+                $(".date-picker .btn").click(function () {
+                    $("#datepicker").datepicker("show");
+                });
+            });
+
+            var temperatureChartInstance;
+            var humidityChartInstance;
+            var pressureChartInstance;
+            var windChartInstance;
+
+            function updateCharts(data) {
+                clearChartData();
+
+                var temperatureData = data.map(d => d.temperature_C);
+                var humidityData = data.map(d => d.humidity);
+                var pressureData = data.map(d => d.pressure_hPa);
+                var windData = data.map(d => d.wind);
+                var labels = data.map(d => d.time);
+
+                createTemperatureChart(temperatureData, labels);
+                createHumidityChart(humidityData, labels);
+                createPressureChart(pressureData, labels);
+                createWindChart(windData, labels);
+            }
+
+            function clearChartData() {
+                if (temperatureChartInstance) {
+                    temperatureChartInstance.destroy();
+                }
+                if (humidityChartInstance) {
+                    humidityChartInstance.destroy();
+                }
+                if (pressureChartInstance) {
+                    pressureChartInstance.destroy();
+                }
+                if (windChartInstance) {
+                    windChartInstance.destroy();
+                }
+            }
+
+            function displayNoDataMessage() {
+                $("#noDataMessage").text("No data on this day. Please select a new date.");
+                clearChartData();
+            }
+
+            function displayErrorMessage(message) {
+                alert(message);
+            }
+
+            function createTemperatureChart(temperatureData, labels) {
+                temperatureChartInstance = new Chart(document.getElementById('temperatureChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Temperature (°C)',
+                            data: temperatureData,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
                     }
-                }
-            });
-        
-        }
+                });
+            }
 
-        function createPressureChart(pressureData, labels) {
-            // Create Pressure Chart
-            pressureChartInstance = new Chart(document.getElementById('pressureChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Pressure (hPa)',
-                        data: pressureData,
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: { beginAtZero: true },
-                        y: { beginAtZero: true }
+            function createHumidityChart(humidityData, labels) {
+                humidityChartInstance = new Chart(document.getElementById('humidityChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Humidity (%)',
+                            data: humidityData,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
                     }
-                }
-            });
-        }
-        });
-        function createWindChart(windData, labels) {
-            // Create Wind Chart
-            windChartInstance = new Chart(document.getElementById('windChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Wind (m/s)',
-                        data: windData,
-                        borderColor: 'rgba(153, 102, 255, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: { beginAtZero: true },
-                        y: { beginAtZero: true }
+                });
+            }
+
+            function createPressureChart(pressureData, labels) {
+                pressureChartInstance = new Chart(document.getElementById('pressureChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Pressure (hPa)',
+                            data: pressureData,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
                     }
-                }
-            });
-        }
-    </script>
-}
+                });
+            }
 
-
-
-
-
-
+            function createWindChart(windData, labels) {
+                windChartInstance = new Chart(document.getElementById('windChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Wind (m/s)',
+                            data: windData,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+        </script>
+    }
+</body>
+</html>
