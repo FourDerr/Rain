@@ -11,6 +11,7 @@ env:
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 7.0.x
   WORKING_DIRECTORY: Rain
+  RESOURCE_GROUP_NAME: RainResource # Ensure this matches your resource group name
 
 jobs:
   build:
@@ -55,4 +56,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: production
+          resource-group: ${{ env.RESOURCE_GROUP_NAME }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
