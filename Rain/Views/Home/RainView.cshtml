@@ -6,7 +6,6 @@
     ViewData["Title"] = "Home Page";
 
     var entries = await DeviceService.GetAllEntries(); // Call the GetAllEntries() method
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 }
 
 @model DateTime
@@ -90,28 +89,72 @@
     </style>
 </head>
 <body>
+@model DateTime
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <div class="container">
-        <div class="icon-container">
-            <img src="https://img.icons8.com/ios-filled/100/000000/cloud.png" alt="Cloud Icon" class="cloud-icon">
+</head>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<h1 class="display-4 text-center">Rain Data</h1>
+<div class="input-container">
+    <input type="text" id="datepicker" name="datepicker" readonly class="center" placeholder="Please Select Date" />
+</div>
+
+<br />
+<br />
+
+<div id="thumbnailGallery" class="row">
+    <div class="col-4">
+        <div class="card h-100" >
+            <i id="thumbnailIcon" class="fas fa-cloud" style="font-size: 5em;" hidden></i>
         </div>
-        <div class="input-container">
-            <p class="instruction">กดเลือกวันที่ที่คุณต้องการดูข้อมูลน้ำฝน:</p>
-            <input type="text" id="datepicker" name="datepicker" readonly class="center" />
-        </div>
-        <div class="date-picker">
-            <button class="btn" data-bs-toggle="modal" >ดูข้อมูลน้ำฝน</button>
-        </div>
-        <br />
-        <br />
-        <div class="canvas-container">
-            <canvas id="temperatureChart"></canvas>
-            <canvas id="humidityChart"></canvas>
-            <canvas id="pressureChart"></canvas>
-            <canvas id="windChart"></canvas>
-        </div>
-        <div id="noDataMessage"></div>
     </div>
+</div>
+
+
+<!-- Modal for carousel popup -->
+<div class="modal fade" id="carouselModal" tabindex="-1" role="dialog" aria-labelledby="carouselModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="carouselModalLabel">Image Gallery</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="imageCarousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner" id="carouselInner"></div>
+                    <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<canvas id="temperatureChart"></canvas>
+<canvas id="humidityChart"></canvas>
+<canvas id="pressureChart"></canvas>
+<canvas id="windChart"></canvas>
+
+
+
+<div id="noDataMessage"></div>
 
     <!-- Modal 1-->
     <div class="modal fade" id="modalToggle" aria-labelledby="modalToggleLabel" tabindex="-1" aria-hidden="true">
@@ -193,32 +236,73 @@
             function updateCharts(data) {
                 clearChartData();
 
-                var temperatureData = data.map(d => d.temperature_C);
-                var humidityData = data.map(d => d.humidity);
-                var pressureData = data.map(d => d.pressure_hPa);
-                var windData = data.map(d => d.wind);
-                var labels = data.map(d => d.time);
+            var temperatureData = data.map(d => d.temperature_C);
+            var humidityData = data.map(d => d.humidity);
+            var pressureData = data.map(d => d.pressure_hPa);
+            var windData = data.map(d => d.wind);
+            var labels = data.map(d => d.time);
+            var picture = data.map(d => d.value);
 
-                createTemperatureChart(temperatureData, labels);
-                createHumidityChart(humidityData, labels);
-                createPressureChart(pressureData, labels);
-                createWindChart(windData, labels);
+            // Create charts with new data
+            createTemperatureChart(temperatureData, labels);
+            createHumidityChart(humidityData, labels);
+            createPressureChart(pressureData, labels);
+            createWindChart(windData, labels);
+            displayThumbnail(picture, labels);
+            populateCarousel(picture, labels);
+        }
+
+        function displayThumbnail(picture, labels) {
+            if (picture && picture.length > 0) {
+                var thumbnailImage = `data:image/jpeg;base64,${picture}`;
+                $("#thumbnailGallery").html(`
+                    <div class="col-4 d-flex justify-content-center align-items-center">
+                        <div class="card h-100 text-center">
+                            <i id="thumbnailIcon" class="fas fa-cloud" style="font-size: 5em;" data-toggle="modal" data-target="#carouselModal"></i>
+                            <span class="ml-2">Image Gallery</span>
+                        </div>
+                    </div>
+                `);
+            } else {
+                $("#thumbnailGallery").empty(); // Clear the gallery if no picture is available
+            }
+        }
+
+        function populateCarousel(pictures, labels) {
+            $("#carouselInner").empty(); // Clear previous carousel items
+
+            pictures.forEach((entry, index) => {
+                if (entry && entry.length > 0) {
+                    var isActive = index === 0 ? "active" : "";
+                    var label = labels[index]; // Get the corresponding label for the current picture
+                    var carouselItem = `
+                        <div class="carousel-item ${isActive}">
+                                <p>Picture ${index + 1} Capture Time : ${label}</p>
+                            <img class="d-block w-100" src="data:image/jpeg;base64,${entry}" alt="Slide ${index + 1}">
+                        </div>`;
+                    $("#carouselInner").append(carouselItem);
+                }
+            });
+        }
+
+
+        function clearChartData() {
+            // Clear old data
+            if (temperatureChartInstance) {
+                temperatureChartInstance.destroy();
+            }
+            if (humidityChartInstance) {
+                humidityChartInstance.destroy();
+            }
+            if (pressureChartInstance) {
+                pressureChartInstance.destroy();
+            }
+            if (windChartInstance) {
+                windChartInstance.destroy();
             }
 
-            function clearChartData() {
-                if (temperatureChartInstance) {
-                    temperatureChartInstance.destroy();
-                }
-                if (humidityChartInstance) {
-                    humidityChartInstance.destroy();
-                }
-                if (pressureChartInstance) {
-                    pressureChartInstance.destroy();
-                }
-                if (windChartInstance) {
-                    windChartInstance.destroy();
-                }
-            }
+            
+        }
 
             function displayNoDataMessage() {
                 $("#noDataMessage").text("No data on this day. Please select a new date.");
@@ -271,48 +355,53 @@
                 });
             }
 
-            function createPressureChart(pressureData, labels) {
-                pressureChartInstance = new Chart(document.getElementById('pressureChart').getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Pressure (hPa)',
-                            data: pressureData,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            x: { beginAtZero: true },
-                            y: { beginAtZero: true }
-                        }
+        function createPressureChart(pressureData, labels) {
+            // Create Pressure Chart
+            pressureChartInstance = new Chart(document.getElementById('pressureChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pressure (hPa)',
+                        data: pressureData,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: { beginAtZero: true },
+                        y: { beginAtZero: true }
                     }
-                });
-            }
+                }
+            });
+        }
+        function createWindChart(windData, labels) {
+            // Create Wind Chart
+            windChartInstance = new Chart(document.getElementById('windChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Wind (m/s)',
+                        data: windData,
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: { beginAtZero: true },
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+    </script>
+}
 
-            function createWindChart(windData, labels) {
-                windChartInstance = new Chart(document.getElementById('windChart').getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Wind (m/s)',
-                            data: windData,
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            x: { beginAtZero: true },
-                            y: { beginAtZero: true }
-                        }
-                    }
-                });
-            }
-        </script>
-    }
-</body>
-</html>
+
+
+
+
+
