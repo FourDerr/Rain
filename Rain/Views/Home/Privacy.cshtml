@@ -14,30 +14,31 @@
             margin-bottom: 20px; /* ระยะห่างด้านล่าง */
         }
 
-            .container .content {
-                display: inline-block; /* ทำให้ div เป็น inline-block */
+            .container .content, .container img {
+                display: inline-block; /* ใช้การจัดวางแบบ inline-block */
                 vertical-align: middle; /* จัดให้อยู่ตรงกลางแนวดิ่ง */
-                max-width: 600px; /* กำหนดความกว้างสูงสุด */
-                margin: 0 20px; /* ระยะห่างด้านข้าง */
             }
 
-          
+            .container img {
+                max-width: 600px; /* กำหนดขนาดสูงสุดของรูป */
+                width: 50%; /* กำหนดความกว้าง 50% ของพื้นที่ */
+                height: auto; /* ปรับขนาดความสูงอัตโนมัติ */
+                border-radius: 10px; /* เพิ่มขอบมน */
+            }
 
-        /* CSS สำหรับข้อความ */
-        .text {
-            max-width: 600px; /* กำหนดความกว้างสูงสุดของข้อความ */
-            margin: 0 20px; /* ระยะห่างด้านข้างของข้อความ */
-        }
+            .container .content {
+                max-width: 600px; /* กำหนดความกว้างสูงสุด */
+                padding: 0 20px; /* ระยะห่างด้านข้าง */
+            }
 
-        /* CSS สำหรับรูปภาพ */
-        .container img {
-            display: inline-block; /* ทำให้ img เป็น inline-block */
-            vertical-align: middle; /* จัดให้อยู่ตรงกลางแนวดิ่ง */
-            max-width: 100%; /* กำหนดให้ขนาดสูงสุดของรูปเท่ากับขนาดของ container */
-            height: auto; /* ปรับขนาดความสูงอัตโนมัติ */
-            border-radius: 10px; /* เพิ่มขอบมน */
-        }
+            /* CSS สำหรับ Container with Reverse */
+            .container.reverse {
+                direction: rtl; /* เปลี่ยนทิศทางการจัดวาง */
+            }
 
+                .container.reverse .content {
+                    direction: ltr; /* ย้อนทิศทางข้อความกลับ */
+                }
         /* CSS สำหรับ Hero Section */
         .hero-section {
             display: flex; /* ใช้ flexbox layout */
@@ -76,14 +77,12 @@
                 margin-right: 120px;
             }
 
-
-
     </style>
 </head>
 <body>
     <!-- Hero Section -->
     <div class="hero-section">
-        <img src="https://via.placeholder.com/701x468" alt="701x468">
+        <img src="~/img/allpictures/team_1.png" alt="701x468" />
         <div class="content">
             <h1>About Us</h1>
             <p>HubSpot's company and culture are a lot like our product.</p>
@@ -93,7 +92,7 @@
 
     <!-- Container -->
     <div class="container">
-        <img src="https://via.placeholder.com/600x400" alt="600x400">
+        <img src="~/img/allpictures/team_2.jpg" alt="600x400" />
         <div class="content">
             <h1>Our Mission: Helping Millions of Organizations Grow Better</h1>
             <p>We believe not just in growing bigger, but in growing better. And growing better means aligning the success of your own business with the success of your customers. Win-win!</p>
@@ -101,8 +100,8 @@
     </div>
 
     <!-- Container with Reverse -->
-    <div class="container">
-        <img src="https://via.placeholder.com/600x400" alt="600x400" style="order: 2; margin-left: 20px;">
+    <div class="container reverse">
+        <img src="~/img/allpictures/team_3.jpg" alt="600x400" />
         <div class="content">
             <h1>Our Story</h1>
             <p>In 2004, fellow MIT graduate students Brian Halligan and Dharmesh Shah noticed a major shift in the way people shop and purchase products. Buyers didn’t want to be interrupted by ads; they wanted helpful information. In 2006, they founded HubSpot to help companies use that shift to grow better with inbound marketing.</p>
@@ -110,5 +109,5 @@
         </div>
     </div>
 
-    </body>
+</body>
 </html>
