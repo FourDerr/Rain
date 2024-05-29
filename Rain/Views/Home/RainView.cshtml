@@ -138,12 +138,12 @@
             createHumidityChart(humidityData, labels);
             createPressureChart(pressureData, labels);
             createWindChart(windData, labels);
-            displayThumbnail(picture); 
-            populateCarousel(picture);
+            displayThumbnail(picture, labels);
+            populateCarousel(picture, labels);
         }
 
-        function displayThumbnail(picture) {
-            if (picture.length > 0) {
+        function displayThumbnail(picture, labels) {
+            if (picture && picture.length > 0) {
                 var thumbnailImage = `data:image/jpeg;base64,${picture}`;
                 $("#thumbnailGallery").html(`
                     <div class="col-4 d-flex justify-content-center align-items-center">
@@ -153,18 +153,25 @@
                         </div>
                     </div>
                 `);
+            } else {
+                $("#thumbnailGallery").empty(); // Clear the gallery if no picture is available
             }
         }
 
+        function populateCarousel(pictures, labels) {
+            $("#carouselInner").empty(); // Clear previous carousel items
 
-        function populateCarousel(picture) {
-            picture.forEach((entry, index) => {
-                var isActive = index === 0 ? "active" : "";
-                var carouselItem = `
-                    <div class="carousel-item ${isActive}">
-                        <img class="d-block w-100" src="data:image/jpeg;base64,${entry}" alt="Slide ${index + 1}">
-                    </div>`;
-                $("#carouselInner").append(carouselItem);
+            pictures.forEach((entry, index) => {
+                if (entry && entry.length > 0) {
+                    var isActive = index === 0 ? "active" : "";
+                    var label = labels[index]; // Get the corresponding label for the current picture
+                    var carouselItem = `
+                        <div class="carousel-item ${isActive}">
+                                <p>Picture ${index + 1} Time : ${label}</p>
+                            <img class="d-block w-100" src="data:image/jpeg;base64,${entry}" alt="Slide ${index + 1}">
+                        </div>`;
+                    $("#carouselInner").append(carouselItem);
+                }
             });
         }
 
