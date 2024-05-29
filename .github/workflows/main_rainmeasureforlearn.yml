@@ -57,5 +57,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: production
-          resource-group: ${{ env.RESOURCE_GROUP_NAME }}
+          resource-group-name: ${{ env.RESOURCE_GROUP_NAME }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
