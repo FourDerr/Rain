@@ -4,7 +4,20 @@
 @inject Device.Services.DeviceService DeviceService
 @{
     ViewData["Title"] = "Home Page";
-
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/site.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     var entries = await DeviceService.GetAllEntries(); // Call the GetAllEntries() method
 }
 
@@ -13,22 +26,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/css/site.css">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    
+
     <style>
         body {
-            background-color: #f7f7f7;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            background-color: #ece4d4;
         }
 
         .container {
             text-align: center;
-            padding-top: 100px;
+            padding-top: 10px;
         }
 
         .icon-container {
@@ -40,39 +47,68 @@
             width: 100px;
             height: 100px;
         }
-
+        /* input-container */
         .input-container {
             margin-bottom: 20px;
             text-align: center;
+            font-weight: 800;
+
         }
-
-            .input-container .instruction {
-                font-size: 1.1rem;
-                margin-bottom: 10px;
-                color: #333;
-            }
-
-        .date-picker .btn {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 1.2rem;
-            border-radius: 25px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-            .date-picker .btn:hover {
-                background-color: #555;
-                transform: translateY(-2px);
-            }
-
-        .canvas-container {
+        /* End input-container */
+        
+        /*icon*/
+        /* วงกลมรอบไอคอน */
+        .icon-circle {
+            width: 120px;
+            height: 120px;
+            background-color: #9AA090;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* เพิ่มเงาให้วงกลม */
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px auto; /* จัดวงกลมให้อยู่ตรงกลาง */
+            transition: transform 0.3s, box-shadow 0.3s; /* ลูกเล่นการเปลี่ยนแปลง */
         }
+
+            /* ลูกเล่นเมื่อเลื่อนเมาส์ผ่านวงกลม */
+            .icon-circle:hover {
+                transform: translateY(-5px); /* ขยับขึ้นเมื่อเมาส์เลื่อนมา */
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* เพิ่มเงาเมื่อเมาส์เลื่อนมา */
+            }
+
+        /* การจัดการตำแหน่งและสไตล์ของคำอธิบาย */
+        .input-container .instruction {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* End input-container */
+
+        /* กล่องกดปฏิทิน */
+        .custom-input {
+            font-size: 1.2rem;
+            padding: 10px 15px;
+            border-radius: 15px; /* ขอบมน */
+            border: 1px solid #ccc;
+            width: 300px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s, box-shadow 0.3s; /* ลูกเล่นการเปลี่ยนแปลง */
+            background-color: #f9f9f9; /* สีพื้นหลัง */
+        }
+
+            .custom-input:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* ลูกเล่นเงาเมื่อคลิก */
+                outline: none; /* เอาเส้นกรอบที่แสดงตอนคลิกออก */
+            }
+
+            .custom-input:hover {
+                background-color: #e0e0e0; /* สีพื้นหลังเปลี่ยนเมื่อเมาส์อยู่เหนือ */
+            }
+         /* สิ้นสุดกล่องเลือกปปฏิทิน */
 
             .canvas-container canvas {
                 margin: 10px;
@@ -85,112 +121,117 @@
             color: #ff0000;
             margin-top: 20px;
             text-align: center;
+            margin-bottom:auto;
         }
+        
+
+        /*thumbnailGallery*/
+        #thumbnailGallery {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+           
+           
+        }
+
+        .card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius:10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* เงา */
+            transition: transform 0.3s, box-shadow 0.3s; /* ลูกเล่นการเปลี่ยนแปลง */
+            background-color: transparent; /* Makes the background transparent */
+            border: none; /* Optional: Remove border if it exists */
+            box-shadow: none; /* Optional: Remove shadow if it exists */
+        }
+
+            .card:hover {
+                transform: translateY(-5px); /* ขยับขึ้นเมื่อเมาส์เลื่อนมา */
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* เพิ่มเงาเมื่อเมาส์เลื่อนมา */
+            }
+
+        .fas.fa-cloud {
+            font-size: 5em;
+            transition: color 0.3s; /* ลูกเล่นการเปลี่ยนสี */
+        }
+
+            .fas.fa-cloud:hover {
+                color: #9c7d5c; /* เปลี่ยนสีเมื่อเมาส์เลื่อนมา */
+            }
+        /*End thumbnailGallery*/
     </style>
 </head>
+
+
+
 <body>
-@model DateTime
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Gallery</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-</head>
-
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<h1 class="display-4 text-center">Rain Data</h1>
-<div class="input-container">
-    <input type="text" id="datepicker" name="datepicker" readonly class="center" placeholder="Please Select Date" />
-</div>
-
-<br />
-<br />
-
-<div id="thumbnailGallery" class="row">
-    <div class="col-4">
-        <div class="card h-100" >
-            <i id="thumbnailIcon" class="fas fa-cloud" style="font-size: 5em;" hidden></i>
+    <!-- ส่วนของหน้า HTML -->
+    <div class="input-container">
+        <!-- วงกลมที่มีไอคอน -->
+        <div class="icon-circle">
+            <img src="https://img.icons8.com/?size=100&id=101829&format=png&color=000000" class="cloud-icon">
         </div>
+        <!-- คำอธิบายการใช้งาน -->
+        <p class="instruction">:กดเลือกวันต้องการดูข้อมูลปริมาณน้ำฝนน้ำฝน:</p>
+        <!-- ปุ่มเลือกวันที่ -->
+        <input type="text" id="datepicker" name="datepicker" readonly placeholder="กดเลือกวันที่" class="center custom-input" />
+
+        <div id="noDataMessage"></div>
+
     </div>
-</div>
+   
+        <br />
+        <br />
 
-
-<!-- Modal for carousel popup -->
-<div class="modal fade" id="carouselModal" tabindex="-1" role="dialog" aria-labelledby="carouselModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="carouselModalLabel">Image Gallery</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="imageCarousel" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner" id="carouselInner"></div>
-                    <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Next</span>
-                    </a>
+        <div id="thumbnailGallery" class="row">
+            <div class="col-4">
+                <div class="card h-100" >
+                    <i id="thumbnailIcon" class="fas fa-cloud" style="font-size: 5em;" hidden></i>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<canvas id="temperatureChart"></canvas>
-<canvas id="humidityChart"></canvas>
-<canvas id="pressureChart"></canvas>
-<canvas id="windChart"></canvas>
+        <div class="canvas-container">
+        <canvas id="temperatureChart" style="background-color: #eeeeee;"></canvas>
+        <canvas id="humidityChart" style="background-color: #eeeeee;"></canvas>
+        <canvas id="pressureChart" style="background-color: #eeeeee;"></canvas>
+        <canvas id="windChart" style="background-color: #eeeeee;"></canvas>
+        </div>
+
+        
+    
 
 
 
-<div id="noDataMessage"></div>
 
-    <!-- Modal 1-->
-    <div class="modal fade" id="modalToggle" aria-labelledby="modalToggleLabel" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <!-- Modal for carousel popup -->
+    <div class="modal fade" id="carouselModal" tabindex="-1" role="dialog" aria-labelledby="carouselModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalToggleLabel">Modal 1</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="carouselModalLabel">Image Gallery</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
-                    Show a second modal and hide this one with the button below.
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-target="#modalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">Open second modal</button>
+                    <div id="imageCarousel" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner" id="carouselInner"></div>
+                        <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal 2-->
-    <div class="modal fade" id="modalToggle2" aria-hidden="true" aria-labelledby="modalToggleLabel2" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalToggleLabel2">Modal 2</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Hide this modal and show the first with the button below.
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-target="#modalToggle" data-bs-toggle="modal" data-bs-dismiss="modal">Back to first</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     @section Scripts {
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -200,11 +241,16 @@
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <script>
             $(function () {
+                $("#temperatureChart").hide();
+                $("#humidityChart").hide();
+                $("#pressureChart").hide();
+                $("#windChart").hide();
                 $("#datepicker").datepicker({
                     dateFormat: "dd/mm/yy",
                     onSelect: function (dateText) {
                         // Clear old data
-                        $("#noDataMessage").empty();
+                        $("#noDataMessage").empty();                
+                        $("#thumbnailGallery").empty();
                         $.getJSON('/api/Device/filter', { date: dateText })
                             .done(function (data) {
                                 if (data.length === 0) {
@@ -236,73 +282,73 @@
             function updateCharts(data) {
                 clearChartData();
 
-            var temperatureData = data.map(d => d.temperature_C);
-            var humidityData = data.map(d => d.humidity);
-            var pressureData = data.map(d => d.pressure_hPa);
-            var windData = data.map(d => d.wind);
-            var labels = data.map(d => d.time);
-            var picture = data.map(d => d.value);
+                var temperatureData = data.map(d => d.temperature_C);
+                var humidityData = data.map(d => d.humidity);
+                var pressureData = data.map(d => d.pressure_hPa);
+                var windData = data.map(d => d.wind);
+                var labels = data.map(d => d.time);
+                var picture = data.map(d => d.value);
 
-            // Create charts with new data
-            createTemperatureChart(temperatureData, labels);
-            createHumidityChart(humidityData, labels);
-            createPressureChart(pressureData, labels);
-            createWindChart(windData, labels);
-            displayThumbnail(picture, labels);
-            populateCarousel(picture, labels);
-        }
-
-        function displayThumbnail(picture, labels) {
-            if (picture && picture.length > 0) {
-                var thumbnailImage = `data:image/jpeg;base64,${picture}`;
-                $("#thumbnailGallery").html(`
-                    <div class="col-4 d-flex justify-content-center align-items-center">
-                        <div class="card h-100 text-center">
-                            <i id="thumbnailIcon" class="fas fa-cloud" style="font-size: 5em;" data-toggle="modal" data-target="#carouselModal"></i>
-                            <span class="ml-2">Image Gallery</span>
-                        </div>
-                    </div>
-                `);
-            } else {
-                $("#thumbnailGallery").empty(); // Clear the gallery if no picture is available
+                // Create charts with new data
+                createTemperatureChart(temperatureData, labels);
+                createHumidityChart(humidityData, labels);
+                createPressureChart(pressureData, labels);
+                createWindChart(windData, labels);
+                displayThumbnail(picture, labels);
+                populateCarousel(picture, labels);
             }
-        }
 
-        function populateCarousel(pictures, labels) {
-            $("#carouselInner").empty(); // Clear previous carousel items
-
-            pictures.forEach((entry, index) => {
-                if (entry && entry.length > 0) {
-                    var isActive = index === 0 ? "active" : "";
-                    var label = labels[index]; // Get the corresponding label for the current picture
-                    var carouselItem = `
-                        <div class="carousel-item ${isActive}">
-                                <p>Picture ${index + 1} Capture Time : ${label}</p>
-                            <img class="d-block w-100" src="data:image/jpeg;base64,${entry}" alt="Slide ${index + 1}">
-                        </div>`;
-                    $("#carouselInner").append(carouselItem);
+            function displayThumbnail(picture, labels) {
+                if (picture && picture.length > 0) {
+                    var thumbnailImage = `data:image/jpeg;base64,${picture}`;
+                    $("#thumbnailGallery").html(`
+                                <div class="col-4 d-flex justify-content-center align-items-center">
+                                    <div class="card h-100 text-center">
+                                        <i id="thumbnailIcon" class="fas fa-cloud" style="font-size: 5em;" data-toggle="modal" data-target="#carouselModal"></i>
+                                        <span class="ml-2">Image Gallery</span>
+                                    </div>
+                                </div>
+                            `);
+                } else {
+                    $("#thumbnailGallery").empty(); // Clear the gallery if no picture is available
                 }
-            });
-        }
-
-
-        function clearChartData() {
-            // Clear old data
-            if (temperatureChartInstance) {
-                temperatureChartInstance.destroy();
-            }
-            if (humidityChartInstance) {
-                humidityChartInstance.destroy();
-            }
-            if (pressureChartInstance) {
-                pressureChartInstance.destroy();
-            }
-            if (windChartInstance) {
-                windChartInstance.destroy();
             }
 
-            
-        }
+            function populateCarousel(pictures, labels) {
+                $("#carouselInner").empty(); // Clear previous carousel items
+
+                pictures.forEach((entry, index) => {
+                    if (entry && entry.length > 0) {
+                        var isActive = index === 0 ? "active" : "";
+                        var label = labels[index]; // Get the corresponding label for the current picture
+                        var carouselItem = `
+                                    <div class="carousel-item ${isActive}">
+                                            <p>Picture ${index + 1} Capture Time : ${label}</p>
+                                        <img class="d-block w-100" src="data:image/jpeg;base64,${entry}" alt="Slide ${index + 1}">
+                                    </div>`;
+                        $("#carouselInner").append(carouselItem);
+                    }
+                });
+            }
+
+
+            function clearChartData() {
+                // Clear old data
+                if (temperatureChartInstance) {
+                    temperatureChartInstance.destroy();
+                }
+                if (humidityChartInstance) {
+                    humidityChartInstance.destroy();
+                }
+                if (pressureChartInstance) {
+                    pressureChartInstance.destroy();
+                }
+                if (windChartInstance) {
+                    windChartInstance.destroy();
+                }
+
+
+            }
 
             function displayNoDataMessage() {
                 $("#noDataMessage").text("No data on this day. Please select a new date.");
@@ -322,6 +368,7 @@
                             label: 'Temperature (°C)',
                             data: temperatureData,
                             borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)', // Add this line for background color
                             borderWidth: 1
                         }]
                     },
@@ -331,7 +378,8 @@
                             y: { beginAtZero: true }
                         }
                     }
-                });
+                }),
+                $("#temperatureChart").show();
             }
 
             function createHumidityChart(humidityData, labels) {
@@ -352,56 +400,60 @@
                             y: { beginAtZero: true }
                         }
                     }
-                });
+                }),
+                    $("#humidityChart").show();
             }
 
-        function createPressureChart(pressureData, labels) {
-            // Create Pressure Chart
-            pressureChartInstance = new Chart(document.getElementById('pressureChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Pressure (hPa)',
-                        data: pressureData,
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: { beginAtZero: true },
-                        y: { beginAtZero: true }
+            function createPressureChart(pressureData, labels) {
+                // Create Pressure Chart
+                pressureChartInstance = new Chart(document.getElementById('pressureChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Pressure (hPa)',
+                            data: pressureData,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
                     }
-                }
-            });
-        }
-        function createWindChart(windData, labels) {
-            // Create Wind Chart
-            windChartInstance = new Chart(document.getElementById('windChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Wind (m/s)',
-                        data: windData,
-                        borderColor: 'rgba(153, 102, 255, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: { beginAtZero: true },
-                        y: { beginAtZero: true }
+                }),
+                $("#pressureChart").show();
+            }
+            function createWindChart(windData, labels) {
+                // Create Wind Chart
+                windChartInstance = new Chart(document.getElementById('windChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Wind (m/s)',
+                            data: windData,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
                     }
-                }
-            });
-        }
-    </script>
-}
+                }),
+
+                    $("#windChart").show();
+            }
+            
+
+        </script>
+    }
 
 
-
-
-
-
+</body>
+</html>
