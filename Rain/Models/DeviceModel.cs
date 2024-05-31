@@ -17,6 +17,8 @@ namespace Device.Models
         public double pressure_hPa { get; set; }
         public string BME280 { get; set; }
         public double wind { get; set; }
+        public double day_cum_rain { get; set; }
+        public double cum_rain { get; set; }
         public string date { get; set; }
         public string time { get; set; }
         public string value { get; set; }

@@ -193,6 +193,8 @@
         </div>
 
         <div class="canvas-container">
+        <canvas id="RainCumChart" style="background-color: #eeeeee;"></canvas>
+        <canvas id="RainCumDayChart" style="background-color: #eeeeee;"></canvas>
         <canvas id="temperatureChart" style="background-color: #eeeeee;"></canvas>
         <canvas id="humidityChart" style="background-color: #eeeeee;"></canvas>
         <canvas id="pressureChart" style="background-color: #eeeeee;"></canvas>
@@ -241,6 +243,8 @@
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <script>
             $(function () {
+                $("#RainCumChart").hide();
+                $("#RainCumDayChart").hide();
                 $("#temperatureChart").hide();
                 $("#humidityChart").hide();
                 $("#pressureChart").hide();
@@ -251,7 +255,7 @@
                         // Clear old data
                         $("#noDataMessage").empty();                
                         $("#thumbnailGallery").empty();
-                        $.getJSON('/api/Device/filter', { date: dateText })
+                        $.getJSON('/api/Device/GetByDate', { date: dateText })
                             .done(function (data) {
                                 if (data.length === 0) {
                                     displayNoDataMessage(); // Call displayNoDataMessage if API returns no data
@@ -278,6 +282,8 @@
             var humidityChartInstance;
             var pressureChartInstance;
             var windChartInstance;
+            var RainCumChartInstance;
+            var RainCumDayChartInstance;
 
             function updateCharts(data) {
                 clearChartData();
@@ -286,7 +292,10 @@
                 var humidityData = data.map(d => d.humidity);
                 var pressureData = data.map(d => d.pressure_hPa);
                 var windData = data.map(d => d.wind);
+                var cumdayData = data.map(d => d.day_cum_rain);
+                var cumrainData = data.map(d => d.cum_rain);
                 var labels = data.map(d => d.time);
+                var day = data.map(d => d.date);
                 var picture = data.map(d => d.value);
 
                 // Create charts with new data
@@ -294,6 +303,8 @@
                 createHumidityChart(humidityData, labels);
                 createPressureChart(pressureData, labels);
                 createWindChart(windData, labels);
+                createDayCumrainChart(cumdayData, day,labels);
+                createCumrainChart(cumrainData, day,labels);
                 displayThumbnail(picture, labels);
                 populateCarousel(picture, labels);
             }
@@ -346,6 +357,12 @@
                 if (windChartInstance) {
                     windChartInstance.destroy();
                 }
+                if (RainCumChartInstance) {
+                    RainCumChartInstance.destroy();
+                }
+                if (RainCumDayChartInstance) {
+                    RainCumDayChartInstance.destroy();
+                }
 
 
             }
@@ -353,10 +370,6 @@
             function displayNoDataMessage() {
                 $("#noDataMessage").text("No data on this day. Please select a new date.");
                 clearChartData();
-            }
-
-            function displayErrorMessage(message) {
-                alert(message);
             }
 
             function createTemperatureChart(temperatureData, labels) {
@@ -448,6 +461,52 @@
                 }),
 
                     $("#windChart").show();
+            }
+
+            function createDayCumrainChart(cumdayData, day,labels) {
+                RainCumDayChartInstance = new Chart(document.getElementById('RainCumDayChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Rain (ml/h)',
+                            data: cumdayData,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
+                    }
+                }),
+
+                $("#RainCumDayChart").show();
+
+            }
+            function createCumrainChart(cumrainData, day,labels){
+                RainCumChartInstance = new Chart(document.getElementById('RainCumChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Rain (ml/days)',
+                            data: cumrainData,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
+                    }
+                }),
+
+                    $("#RainCumChart").show();
             }
             
 
