@@ -1,12 +1,8 @@
 ﻿using Device.Models;
 using Device.Services;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
-using System.Threading.Tasks;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-//using Rain.Models;
-//using Rain.Services;
+using System.Threading.Tasks;
 
 namespace Device.Controllers
 {
@@ -16,26 +12,34 @@ namespace Device.Controllers
     {
         private readonly DeviceService _deviceService;
 
-
         public DeviceController(DeviceService deviceService)
         {
             _deviceService = deviceService;
         }
 
-
-        [HttpGet]
-        public async Task<IActionResult> GetRainData(string date)
+        // api/Device/GetByDate?date={date}
+        [HttpGet("GetByDate")]
+        public async Task<ActionResult<List<DeviceModel>>> GetByDate(string date)
         {
-            List<DeviceModel> data = await _deviceService.GetEntryByDate(date);
-            return new JsonResult(data);
+            if (string.IsNullOrEmpty(date))
+            {
+                return BadRequest("Date is required.");
+            }
+
+            var rainList = await _deviceService.GetEntryByDate(date);
+            if (rainList.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(rainList);
         }
 
-        // api/Device
-        [HttpGet]
+        // api/Device/GetAll
+        [HttpGet("GetAll")]
         public async Task<List<DeviceModel>> GetAll() => await _deviceService.GetAllEntries();
 
-        // api/Device/{id}
-        [HttpGet("{id:length(24)}")]
+        // api/Device/{id:length(24)}
+        [HttpGet("GetById/{id:length(24)}")]
         public async Task<ActionResult<DeviceModel>> GetById(string id)
         {
             var rain = await _deviceService.GetEntryById(id);
@@ -47,20 +51,8 @@ namespace Device.Controllers
             return rain;
         }
 
-        // api/Device/filter?date={date}
-        [HttpGet("filter")]
-        public async Task<ActionResult<List<DeviceModel>>> GetByDate(string date)
-        {
-            var rainList = await _deviceService.GetEntryByDate(date);
-            if (rainList.Count == 0)
-            {
-                return NotFound();
-            }
-            return rainList;
-        }
-
-        // api/rains
-        [HttpPost]
+        // api/Device/Create
+        [HttpPost("Create")]
         public async Task<IActionResult> Post(DeviceModel newrain)
         {
             newrain.Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
@@ -68,8 +60,8 @@ namespace Device.Controllers
             return CreatedAtAction(nameof(GetById), new { id = newrain.Id }, newrain);
         }
 
-        // api/Device/{id}
-        [HttpPut("{id:length(24)}")]
+        // api/Device/Update/{id}
+        [HttpPut("Update/{id:length(24)}")]
         public async Task<IActionResult> Put(string id, DeviceModel updatedrain)
         {
             var rain = await _deviceService.GetEntryById(id);
@@ -84,8 +76,8 @@ namespace Device.Controllers
             return NoContent();
         }
 
-        // api/Device/{id}
-        [HttpDelete("{id:length(24)}")]
+        // api/Device/Delete/{id}
+        [HttpDelete("Delete/{id:length(24)}")]
         public async Task<IActionResult> Delete(string id)
         {
             var rain = await _deviceService.GetEntryById(id);
@@ -97,7 +89,5 @@ namespace Device.Controllers
             await _deviceService.RemoveEntry(id);
             return NoContent();
         }
-
     }
 }
-
