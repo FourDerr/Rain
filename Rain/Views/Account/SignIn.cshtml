@@ -86,7 +86,7 @@
                 }
 
         .box {
-            display:inline-flex;
+            display: inline-flex;
             align-items: center;
         }
 
@@ -103,9 +103,9 @@
         </div>
         <div class="login-form">
             <h2>ยินดีต้อนรับ!</h2>
-            <form method="post" action="/Account/Login">
-                <input type="email" name="EmailAddress" placeholder="อีเมล" required>
-                <input type="password" name="Password" placeholder="รหัสผ่าน" required>
+            <form method="post" action="/Account/SignIn">
+                <input type="email" name="email" placeholder="อีเมล" required>
+                <input type="password" name="password" placeholder="รหัสผ่าน" required>
                 <div class="box">
                     <input type="checkbox" id="rememberMe" name="RememberMe">
                     <label for="rememberMe">Remember Me</label>

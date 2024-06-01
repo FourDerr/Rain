@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Rain.Models;
 using RainFinal.Models;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly DeviceService _deviceService;
 
     public HomeController(ILogger<HomeController> logger)
     {
@@ -32,18 +34,26 @@ public class HomeController : Controller
     {
         return View();
     }
+    [Authorize]
     public IActionResult RainView(DateTime? datepicker)
     {
         if (datepicker.HasValue)
         {
-            // Process the selected date
-            // Example: ViewBag.SelectedDate = datepicker.Value;
+            // Fetch data based on the selected date
+            var data = _deviceService.GetEntryByDate(datepicker.Value.ToString("yyyy-MM-dd")).Result;
+            ViewBag.Data = data;
+            ViewBag.SelectedDate = datepicker.Value;
+        }
+        else
+        {
+            // Fetch all data if no date is selected
+            var data = _deviceService.GetAllEntries().Result;
+            ViewBag.Data = data;
         }
 
         return View();
     }
 
-    
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

@@ -14,5 +14,8 @@ namespace Rain.Models
 
         [BsonElement("password")]
         public string password { get; set; }
+
+        [BsonElement("name")]
+        public string name { get; set; }
     }
 }

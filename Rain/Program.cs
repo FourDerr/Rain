@@ -1,33 +1,37 @@
-using Device.Services;
-using Rain.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Rain.Services;
+using Rain.Models;
+using Microsoft.Extensions.Logging;
+using Device.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddControllersWithViews();
 
 // Configure database settings
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
 
 // Register services
-builder.Services.AddSingleton<DeviceService>();
 builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<DeviceService>();  // Register DeviceService
 
-builder.Services.AddControllersWithViews();
+// Configure authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/SignIn";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
-
-if (!app.Environment.IsDevelopment())
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
@@ -38,6 +42,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

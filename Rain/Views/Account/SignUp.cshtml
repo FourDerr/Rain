@@ -14,7 +14,7 @@
         body {
             margin: 0;
             height: 100vh;
-            overflow: hidden; /* ป้องกันการเลื่อนของหน้าเว็บ */
+            overflow: hidden; /* Prevent page scrolling */
         }
 
         .login-container {
@@ -93,34 +93,34 @@
 
             .box label {
                 margin-right: 10px;
-                white-space: nowrap; /* ทำให้ข้อความอยู่ในบรรทัดเดียว */
+                white-space: nowrap; /* Keep label text on one line */
             }
 
         .swal2-container {
-            z-index: 9999 !important; /* แสดง SweetAlert2 เหนือส่วนอื่น ๆ ของหน้า */
+            z-index: 9999 !important; /* Display SweetAlert2 above other page elements */
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function validateForm(event) {
-            event.preventDefault(); // ป้องกันการกระทำเริ่มต้นของฟอร์ม
+            event.preventDefault(); // Prevent default form submission
             var fullName = document.forms["signupForm"]["FullName"].value;
-            var email = document.forms["signupForm"]["EmailAddress"].value;
+            var email = document.forms["signupForm"]["Email"].value;
             var password = document.forms["signupForm"]["Password"].value;
             var confirmPassword = document.forms["signupForm"]["ConfirmPassword"].value;
 
-            // ฟังก์ชันสำหรับแสดง SweetAlert2 และป้องกันการเลื่อนหน้าเว็บ
+            // Function to display SweetAlert2 and prevent page scrolling
             function showAlert(icon, title, text) {
                 Swal.fire({
                     icon: icon,
                     title: title,
                     text: text,
                     backdrop: `
-                                rgba(0,0,0,0.4)
-                                url("/images/nyan-cat.gif")
-                                left top
-                                no-repeat
-                            `,
+                                        rgba(0,0,0,0.4)
+                                        url("/images/nyan-cat.gif")
+                                        left top
+                                        no-repeat
+                                    `,
                     didOpen: () => {
                         document.body.style.overflow = 'hidden';
                     },
@@ -151,7 +151,7 @@
                 return false;
             }
 
-            // ฟอร์มถูกต้อง ให้ส่งฟอร์ม
+            // If form is valid, submit the form
             event.target.submit();
         }
     </script>
@@ -163,14 +163,14 @@
         </div>
         <div class="login-form">
             <h2>สมัครสมาชิก</h2>
-            <form name="signupForm" method="post" action="/Account/SignUp" onsubmit="validateForm(event)">
-                <input type="text" name="FullName" placeholder="ชื่อเต็ม">
-                <input type="email" name="EmailAddress" placeholder="อีเมล">
-                <input type="password" name="Password" placeholder="รหัสผ่าน">
-                <input type="password" name="ConfirmPassword" placeholder="ยืนยันรหัสผ่าน">
+            <form name="signupForm" method="post" action="/Account/SignUp">
+                <input type="text" name="name" placeholder="ชื่อเต็ม" required>
+                <input type="email" name="email" placeholder="อีเมล" required>
+                <input type="password" name="password" placeholder="รหัสผ่าน" required>
+                <input type="password" name="confirmPassword" placeholder="ยืนยันรหัสผ่าน" required>
                 <button type="submit">สมัครสมาชิก</button>
             </form>
-            <p>มีบัญชีอยู่แล้ว? <a href="/Account/Login">เข้าสู่ระบบ</a></p>
+            <p>มีบัญชีอยู่แล้ว? <a href="/Account/SignIn">เข้าสู่ระบบ</a></p>
         </div>
     </div>
 </body>
