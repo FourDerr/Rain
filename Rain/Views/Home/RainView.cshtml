@@ -89,7 +89,7 @@
         /* กล่องกดปฏิทิน */
         .custom-input {
             font-size: 1.2rem;
-            padding: 10px 15px;
+            padding: 10px 10px;
             border-radius: 15px; /* ขอบมน */
             border: 1px solid #ccc;
             width: 300px;
@@ -241,6 +241,10 @@
         <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@latest"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
         <script>
             $(function () {
                 $("#RainCumChart").hide();
@@ -249,29 +253,46 @@
                 $("#humidityChart").hide();
                 $("#pressureChart").hide();
                 $("#windChart").hide();
-                $("#datepicker").datepicker({
-                    dateFormat: "dd/mm/yy",
-                    onSelect: function (dateText) {
-                        // Clear old data
-                        $("#noDataMessage").empty();                
-                        $("#thumbnailGallery").empty();
-                        $.getJSON('/api/Device/GetByDate', { date: dateText })
-                            .done(function (data) {
-                                if (data.length === 0) {
-                                    displayNoDataMessage(); // Call displayNoDataMessage if API returns no data
-                                } else {
-                                    updateCharts(data); // Call updateCharts with the API data
-                                }
-                            })
-                            .fail(function (jqXHR, textStatus, errorThrown) {
-                                if (jqXHR.status === 404) {
-                                    displayNoDataMessage()
-                                } else {
-                                    displayErrorMessage('API call failed: 404 (Not Found)'); // Display custom error message for 404
-                                }
-                            });
+                $("#datepicker").daterangepicker({
+                    autoUpdateInput: true,
+                    timePicker: true,
+                    timePicker24Hour: true,
+                    timePickerIncrement: 5,
+                    locale: {
+                        format: 'DD/MM/YYYY HH:mm',
+                        separator: ' - '
                     }
+                }, function (start, end, label) {
+                    var startDate = start.format('DD/MM/YYYY');
+                    var startTime = start.format('HH:mm');
+                    var endTime = end.format('HH:mm');
+
+                    // Display the selected date and time range in the input
+                    $('#datepicker').val(start.format('DD/MM/YYYY HH:mm') + ' - ' + end.format('DD/MM/YYYY HH:mm'));
+
+                    // Clear old data
+                    $("#noDataMessage").empty();
+                    $("#thumbnailGallery").empty();
+
+                    $.getJSON('/api/Device/GetByDateTimeRange', { date: startDate, startTime: startTime, endTime: endTime })
+                        .done(function (data) {
+                            if (data.length === 0) {
+                                displayNoDataMessage(); // Call displayNoDataMessage if API returns no data
+                            } else {
+                                console.log(start.format('DD/MM/YYYY HH:mm') + ' - ' + end.format('DD/MM/YYYY HH:mm'));
+                                updateCharts(data); // Call updateCharts with the API data
+                            }
+                        })
+                        .fail(function (jqXHR, textStatus, errorThrown) {
+                            if (jqXHR.status === 404) {
+                                displayNoDataMessage();
+                            } else {
+                                displayErrorMessage('API call failed: 404 (Not Found)'); // Display custom error message for 404
+                            }
+                        });
                 });
+
+
 
                 $(".date-picker .btn").click(function () {
                     $("#datepicker").datepicker("show");
