@@ -25,9 +25,9 @@ namespace Device.Services
             }
 
             // Debugging output
-            Console.WriteLine("RainDatabase ConnectionString: " + settings.RainDatabase.ConnectionString);
-            Console.WriteLine("RainDatabase DatabaseName: " + settings.RainDatabase.DatabaseName);
-            Console.WriteLine("RainDatabase CollectionName: " + settings.RainDatabase.CollectionName);
+            //Console.WriteLine("RainDatabase ConnectionString: " + settings.RainDatabase.ConnectionString);
+            //Console.WriteLine("RainDatabase DatabaseName: " + settings.RainDatabase.DatabaseName);
+            //Console.WriteLine("RainDatabase CollectionName: " + settings.RainDatabase.CollectionName);
 
             var mongoClient = new MongoClient(settings.RainDatabase.ConnectionString);
             var mongoDatabase = mongoClient.GetDatabase(settings.RainDatabase.DatabaseName);
@@ -51,5 +51,15 @@ namespace Device.Services
 
         public async Task RemoveEntry(string id) =>
             await _rainfall_dataCollection.DeleteOneAsync(x => x.Id == id);
+        public async Task<List<DeviceModel>> GetDevicesByDateTimeRange(string date, string startTime, string endTime)
+        {
+            var filter = Builders<DeviceModel>.Filter.And(
+                Builders<DeviceModel>.Filter.Eq(device => device.date, date),
+                Builders<DeviceModel>.Filter.Gte(device => device.time, startTime),
+                Builders<DeviceModel>.Filter.Lte(device => device.time, endTime)
+            );
+
+            return await _rainfall_dataCollection.Find(filter).ToListAsync();
+        }
     }
 }
