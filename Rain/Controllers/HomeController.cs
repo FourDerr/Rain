@@ -47,8 +47,8 @@ public class HomeController : Controller
         else
         {
             // Fetch all data if no date is selected
-            var data = _deviceService.GetAllEntries().Result;
-            ViewBag.Data = data;
+            //var data = _deviceService.GetAllEntries().Result;
+            //ViewBag.Data = data;
         }
 
         return View();
