@@ -1,21 +1,21 @@
 using Device.Services;
 using Rain.Models;
-//using Rain.Services;
+using Rain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.Configure<DatabaseSetting>(builder.Configuration.GetSection("RainDatabase"));
+
+// Configure database settings
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
+
+// Register services
 builder.Services.AddSingleton<DeviceService>();
+builder.Services.AddSingleton<UserService>();
 
-
-
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -30,7 +30,6 @@ if (app.Environment.IsDevelopment())
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -44,6 +43,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 
 app.Run();
