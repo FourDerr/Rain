@@ -1,0 +1,120 @@
+﻿@{
+    ViewData["Title"] = "Sign In";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body {
+            margin: 0;
+            height: 105vh;
+            position: relative;
+        }
+
+        .login-container {
+            display: flex;
+            max-width: 1200px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .login-image {
+            width: 50%;
+            height: auto;
+        }
+
+            .login-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .login-form {
+            width: 50%;
+            padding: 40px;
+            background-color: #fff;
+        }
+
+            .login-form h2 {
+                margin-bottom: 20px;
+            }
+
+            .login-form input {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+
+            .login-form button {
+                width: 100%;
+                padding: 10px;
+                background-color: #007bff;
+                border: none;
+                color: #fff;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+                .login-form button:hover {
+                    background-color: #0056b3;
+                }
+
+            .login-form p {
+                margin-top: 10px;
+            }
+
+            .login-form a {
+                color: #007bff;
+                text-decoration: none;
+            }
+
+                .login-form a:hover {
+                    text-decoration: underline;
+                }
+
+        .box {
+            display:inline-flex;
+            align-items: center;
+        }
+
+            .box label {
+                margin-right: 10px;
+                white-space: nowrap; /* ทำให้ข้อความอยู่ในบรรทัดเดียว */
+            }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-image">
+            <img src="~/img/allpictures/poto_1.png" alt="Login Image">
+        </div>
+        <div class="login-form">
+            <h2>ยินดีต้อนรับ!</h2>
+            <form method="post" action="/Account/Login">
+                <input type="email" name="EmailAddress" placeholder="อีเมล" required>
+                <input type="password" name="Password" placeholder="รหัสผ่าน" required>
+                <div class="box">
+                    <input type="checkbox" id="rememberMe" name="RememberMe">
+                    <label for="rememberMe">Remember Me</label>
+                </div>
+                <button type="submit">Sign In</button>
+            </form>
+            <p><a href="#">Forgot your password?</a></p>
+            <p>Don't have an account? <a href="/Account/SignUp">Sign Up</a></p>
+        </div>
+    </div>
+</body>
+</html>

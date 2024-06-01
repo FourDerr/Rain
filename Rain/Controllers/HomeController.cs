@@ -22,6 +22,16 @@ public class HomeController : Controller
     {
         return View();
     }
+
+    public IActionResult SignIn()
+    {
+        return View();
+    }
+
+    public IActionResult SignUp()
+    {
+        return View();
+    }
     public IActionResult RainView(DateTime? datepicker)
     {
         if (datepicker.HasValue)
