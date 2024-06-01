@@ -17,6 +17,24 @@ namespace Device.Controllers
             _deviceService = deviceService;
         }
 
+        [HttpGet("GetByDateTimeRange")]
+        public async Task<IActionResult> GetByDateTimeRange([FromQuery] string date, [FromQuery] string startTime, [FromQuery] string endTime)
+        {
+            if (string.IsNullOrEmpty(date) || string.IsNullOrEmpty(startTime) || string.IsNullOrEmpty(endTime))
+            {
+                return BadRequest("Date, start time, and end time parameters are required.");
+            }
+
+            var devices = await _deviceService.GetDevicesByDateTimeRange(date, startTime, endTime);
+
+            if (devices == null || devices.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(devices);
+        }
+
         // api/Device/GetByDate?date={date}
         [HttpGet("GetByDate")]
         public async Task<ActionResult<List<DeviceModel>>> GetByDate(string date)

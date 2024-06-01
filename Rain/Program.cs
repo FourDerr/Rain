@@ -1,36 +1,39 @@
-using Device.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Rain.Services;
 using Rain.Models;
-//using Rain.Services;
+using Microsoft.Extensions.Logging;
+using Device.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.Configure<DatabaseSetting>(builder.Configuration.GetSection("RainDatabase"));
-builder.Services.AddSingleton<DeviceService>();
-
-
-
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Configure database settings
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
+
+// Register services
+builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<DeviceService>();  // Register DeviceService
+
+// Configure authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/SignIn";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
-
-if (!app.Environment.IsDevelopment())
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -39,11 +42,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 
 app.Run();
