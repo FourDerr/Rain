@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc;
 using Rain.Models;
-using Rain.Services;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 
 namespace Rain.Controllers
@@ -20,32 +20,51 @@ namespace Rain.Controllers
         }
 
         [HttpGet]
-        public IActionResult SignIn()
+        public IActionResult SignUp()
         {
-            return View();
+            return View(new SignUpViewModel());
         }
+
         [HttpPost]
-        public async Task<IActionResult> SignUp(UserModel newUser, string confirmPassword)
+        public async Task<IActionResult> SignUp(SignUpViewModel model)
         {
-            if (newUser.password != confirmPassword)
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Passwords do not match");
-                return View();
+                return View(model);
             }
 
-            _logger.LogInformation("Raw password: {Password}", newUser.password);
-            newUser.password = BCrypt.Net.BCrypt.HashPassword(newUser.password);
-            _logger.LogInformation("Hashed password: {HashedPassword}", newUser.password);
+            if (await _userService.IsEmailRegistered(model.email))
+            {
+                ModelState.AddModelError("email", "Email is already registered");
+                return View(model);
+            }
+
+            var newUser = new UserModel
+            {
+                name = model.name,
+                email = model.email,
+                password = BCrypt.Net.BCrypt.HashPassword(model.password)
+            };
 
             await _userService.CreateUser(newUser);
             _logger.LogInformation("User created with email: {Email}", newUser.email);
             return RedirectToAction("SignIn");
         }
 
+        [HttpGet]
+        public IActionResult SignIn()
+        {
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> SignIn(string email, string password)
         {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
             _logger.LogInformation("SignIn method called with email: {Email}", email);
             var user = await _userService.Authenticate(email, password);
             if (user == null)
@@ -56,10 +75,10 @@ namespace Rain.Controllers
             }
 
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, user.name), // Use the user's name here
-        new Claim(ClaimTypes.NameIdentifier, user.Id)
-    };
+            {
+                new Claim(ClaimTypes.Name, user.name),
+                new Claim(ClaimTypes.NameIdentifier, user.Id)
+            };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -68,18 +87,6 @@ namespace Rain.Controllers
             _logger.LogInformation("User signed in successfully with email: {Email}", email);
             return RedirectToAction("Index", "Home");
         }
-
-
-
-
-        [HttpGet]
-        public IActionResult SignUp()
-        {
-            return View();
-        }
-
-        
-
 
         [HttpPost]
         public async Task<IActionResult> Logout()

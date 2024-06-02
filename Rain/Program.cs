@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Rain.Services;
 using Rain.Models;
-using Microsoft.Extensions.Logging;
 using Device.Services;
 
 var builder = WebApplication.CreateBuilder(args);
