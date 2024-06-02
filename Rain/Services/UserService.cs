@@ -1,57 +1,63 @@
-﻿using Microsoft.Extensions.Options;
-using MongoDB.Bson;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Rain.Models;
+using BCrypt.Net;
+using MongoDB.Bson;
 
-public class UserService
+namespace Rain.Services
 {
-    private readonly IMongoCollection<UserModel> _userCollection;
-
-    public UserService(IOptions<DatabaseSettings> databaseSettings)
+    public class UserService
     {
-        var mongoClient = new MongoClient(databaseSettings.Value.RainWebDatabase.ConnectionString);
-        var mongoDatabase = mongoClient.GetDatabase(databaseSettings.Value.RainWebDatabase.DatabaseName);
-        _userCollection = mongoDatabase.GetCollection<UserModel>(databaseSettings.Value.RainWebDatabase.CollectionName);
-    }
+        private readonly IMongoCollection<UserModel> _userCollection;
 
-    public async Task<List<UserModel>> GetAllUsers() =>
-        await _userCollection.Find(_ => true).ToListAsync();
-
-    public async Task<UserModel> GetUserById(string id)
-    {
-        if (!ObjectId.TryParse(id, out ObjectId objectId))
+        public UserService(IOptions<DatabaseSettings> databaseSettings)
         {
-            return null; // or handle the error as appropriate
+            var mongoClient = new MongoClient(databaseSettings.Value.RainWebDatabase.ConnectionString);
+            var mongoDatabase = mongoClient.GetDatabase(databaseSettings.Value.RainWebDatabase.DatabaseName);
+            _userCollection = mongoDatabase.GetCollection<UserModel>(databaseSettings.Value.RainWebDatabase.CollectionName);
         }
 
-        return await _userCollection.Find(x => x.Id == objectId.ToString()).FirstOrDefaultAsync();
-    }
+        public async Task<List<UserModel>> GetAllUsers() =>
+            await _userCollection.Find(_ => true).ToListAsync();
 
-    public async Task<UserModel?> GetUserByEmail(string email) =>
-        await _userCollection.Find(x => x.email == email).FirstOrDefaultAsync();
-
-    public async Task CreateUser(UserModel newUser) =>
-        await _userCollection.InsertOneAsync(newUser);
-
-    public async Task UpdateUser(string id, UserModel updatedUser) =>
-        await _userCollection.ReplaceOneAsync(x => x.Id == id, updatedUser);
-
-    public async Task RemoveUser(string id) =>
-        await _userCollection.DeleteOneAsync(x => x.Id == id);
-
-    public async Task<UserModel?> Authenticate(string email, string password)
-    {
-        var user = await _userCollection.Find(x => x.email == email).FirstOrDefaultAsync();
-        if (user != null && BCrypt.Net.BCrypt.Verify(password, user.password))
+        public async Task<UserModel> GetUserById(string id)
         {
-            return user;
-        }
-        return null;
-    }
+            if (!ObjectId.TryParse(id, out ObjectId objectId))
+            {
+                return null; // or handle the error as appropriate
+            }
 
-    public async Task<bool> IsEmailRegistered(string email)
-    {
-        var user = await _userCollection.Find(x => x.email == email).FirstOrDefaultAsync();
-        return user != null;
+            return await _userCollection.Find(x => x.Id == objectId.ToString()).FirstOrDefaultAsync();
+        }
+
+        public async Task<UserModel?> GetUserByEmail(string email) =>
+            await _userCollection.Find(x => x.email == email).FirstOrDefaultAsync();
+
+        public async Task CreateUser(UserModel newUser) =>
+            await _userCollection.InsertOneAsync(newUser);
+
+        public async Task UpdateUser(string id, UserModel updatedUser) =>
+            await _userCollection.ReplaceOneAsync(x => x.Id == id, updatedUser);
+
+        public async Task RemoveUser(string id) =>
+            await _userCollection.DeleteOneAsync(x => x.Id == id);
+
+        public async Task<UserModel?> Authenticate(string email, string password)
+        {
+            var user = await _userCollection.Find(x => x.email == email).FirstOrDefaultAsync();
+            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.password))
+            {
+                return user;
+            }
+            return null;
+        }
+
+        public async Task<bool> IsEmailRegistered(string email)
+        {
+            var user = await _userCollection.Find(x => x.email == email).FirstOrDefaultAsync();
+            return user != null;
+        }
     }
 }

@@ -27,5 +27,11 @@ namespace Rain.Models
         [Required(ErrorMessage = "Confirm Password is required.")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [BsonElement("isEmailConfirmed")]
+        public bool isEmailConfirmed { get; set; }
+
+        [BsonElement("emailConfirmationToken")]
+        public string emailConfirmationToken { get; set; }
     }
 }
