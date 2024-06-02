@@ -1,8 +1,7 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Rain.Services;
-using Rain.Models;
-using Microsoft.Extensions.Logging;
 using Device.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Rain.Models;
+using Rain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +10,9 @@ builder.Services.AddControllersWithViews();
 
 // Configure database settings
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
+
+// Configure SMTP settings
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
 // Register services
 builder.Services.AddSingleton<UserService>();

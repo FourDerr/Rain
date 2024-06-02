@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Rain.Models.UserModel
+@{
     ViewData["Title"] = "Sign In";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -97,24 +98,37 @@
     </style>
 </head>
 <body>
+    <h2>Sign In</h2>
+
     <div class="login-container">
         <div class="login-image">
-            <img src="~/img/allpictures/poto_1.png" alt="Login Image">
+            <img src="~/img/allpictures/poto_1.png" alt="SignIn Image">
         </div>
         <div class="login-form">
-            <h2>ยินดีต้อนรับ!</h2>
-            <form method="post" action="/Account/SignIn">
-                <input type="email" name="email" placeholder="อีเมล" required>
-                <input type="password" name="password" placeholder="รหัสผ่าน" required>
-                <div class="box">
-                    <input type="checkbox" id="rememberMe" name="RememberMe">
-                    <label for="rememberMe">Remember Me</label>
+            <h2>Sign In</h2>
+            <form asp-action="SignIn" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label for="email" class="control-label">Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="Email" required />
+                    <span asp-validation-for="email" class="text-danger"></span>
                 </div>
-                <button type="submit">Sign In</button>
+
+                <div class="form-group">
+                    <label for="password" class="control-label">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="Password" required />
+                    <span asp-validation-for="password" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Sign In</button>
             </form>
-            <p><a href="#">Forgot your password?</a></p>
             <p>Don't have an account? <a href="/Account/SignUp">Sign Up</a></p>
         </div>
     </div>
+
 </body>
 </html>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
