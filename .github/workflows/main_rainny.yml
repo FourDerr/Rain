@@ -7,60 +7,60 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+      
+env:
+  AZURE_WEBAPP_NAME: rainny # Ensure this matches the name in Azure
+  AZURE_WEBAPP_PACKAGE_PATH: Rain\publish
+  CONFIGURATION: Release
+  DOTNET_CORE_VERSION: 7.0.x
+  WORKING_DIRECTORY: Rain
+  RESOURCE_GROUP_NAME: RainResource # Ensure this matches your resource group name
+  
 
 jobs:
   build:
     runs-on: windows-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.0.x'
-          include-prerelease: true
-
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
-
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
-
-      - name: Upload artifact for deployment job
+          dotnet-version: 7.0.x
+      - name: Verify .NET SDK version
+        run: dotnet --info
+      - name: Restore dependencies
+        run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+      - name: Build
+        run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+      - name: Test
+        run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
+      - name: Publish
+        run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+      - name: Publish Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   deploy:
     runs-on: windows-latest
     needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
-
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
-          name: .net-app
-      
-      - name: Login to Azure
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_603EEAEC6F454DEE836D9C680C73852E }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_8F6458350CC040BC8FC2CF8991918F23 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_AD0F2944DC2B40C598123A6A27665CE8 }}
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'rainny'
-          slot-name: 'Production'
-          package: .
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: production
+          resource-group-name: ${{ env.RESOURCE_GROUP_NAME }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
           
